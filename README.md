@@ -46,6 +46,20 @@ change, contrairement à un nom tiré de la tâche.
 
 La skill suppose `HERDR_ENV=1` et s'appuie sur la skill `herdr` pour la syntaxe du CLI.
 
+### [`commits-and-prs`](skills/commits-and-prs/SKILL.md)
+
+Le défaut pour committer, rebaser et ouvrir une PR quand le repo ne fixe pas ses propres règles
+(une skill locale ou un `.github/pull_request_template.md` passe devant).
+
+- **Commits atomiques** gardés propres par rebase local, quelle que soit la stratégie de merge
+  du remote : amend ou fixup + autosquash non interactif, jamais de merge de la base.
+- **Messages** en anglais, conventional commits, corps court qui dit le pourquoi.
+- **Corps de PR** en deux sections : « En bref », laissée vide pour qu'un humain la rédige, et
+  « Détails techniques », que l'agent peut remplir. Une édition repart du corps publié pour ne
+  pas écraser ce que l'auteur y a mis.
+- **Captures** rangées dans un dossier par PR, relues avant d'être annoncées.
+- **Retours de review** : un commit correctif par-dessus, sans force-push.
+
 ## Installation
 
 ```bash
