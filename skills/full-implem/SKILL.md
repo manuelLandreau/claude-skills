@@ -1,14 +1,10 @@
 ---
 name: full-implem
 description: >
-  Use when carrying a subject all the way from its statement to a pull request, in one prompt:
-  a ticket key (PROJ-1058, ABC-650), a PR/MR number or URL to pick up, a branch, or just a
-  described change. Automates the plan -> implement -> review chain: plan mode produces a frozen
-  scope contract, implementation runs in slices gated against it, `/simplify` applies the quality
-  cleanups, `/code-review medium` reports the correctness ones, then CI gates, Playwright runtime
-  proof, atomic commits and a draft PR. Exists to kill the two failure modes of that chain:
-  reviews whose finding count tracks the effort dial instead of the code, and scope that drifts
-  past the ticket. A clean branch reporting zero findings is a successful run.
+  Use when carrying a subject all the way from its statement to a draft pull request in one
+  prompt: a ticket key (PROJ-1058), a PR/MR number or URL to pick up, a branch, or just a
+  described change. Also when reviews keep producing findings or the scope keeps drifting past
+  the ticket.
 argument-hint: <clé de ticket | PR | branche | contexte libre, tout optionnel et auto-détecté>
 ---
 
@@ -27,18 +23,26 @@ question de périmètre, à n'importe quelle phase, se tranche en relisant ce fi
 relisant la conversation. Tout ce qui n'y est pas est hors scope, même si c'est une bonne idée,
 même si la review a raison.
 
-### Les deux relectures, et pourquoi jamais `xhigh`
+### Les deux relectures, et quel niveau où
 
 `/simplify` **applique** : 4 agents parallèles sur reuse, simplification, efficiency, altitude,
 aucune chasse aux bugs. On ne lit pas sa sortie, on relit son diff.
 
-`/code-review medium` **rapporte** : de la correctness en haute confiance, et c'est le seul
-moment où l'utilisateur arbitre quelque chose.
+`/code-review` **rapporte** de la correctness, et c'est le seul moment où l'utilisateur arbitre
+quelque chose. Son niveau dépend de ce qu'il relit :
 
-Les deux ensemble couvrent ce que `xhigh` couvrait. `xhigh` n'est jamais la réponse : son
-pipeline est `10 angles → no verify → sweep → ≤15 findings` avec pour consigne explicite de
-sur-signaler, donc il rend une liste tronquée et non vérifiée dont la taille suit la molette et
-pas le code. `/review` ne convient pas non plus, il cible une PR qui n'existe pas encore ici.
+| Passe | Niveau | Pourquoi |
+|---|---|---|
+| Tranche (phase 2) | `medium` | petit diff, seuil de redécoupage calé sur ce niveau |
+| Première passe finale (phase 6) | `high` | la seule où une couverture plus large paie ; le tri `CONFIRMED` + plan absorbe le bruit |
+| Diff des fix (phase 6) | `medium` | en `high`, la boucle « rien de nouveau » ne converge pas |
+
+`xhigh` et `max` ne sont jamais la réponse : leur pipeline sur-signale sans vérifier, donc la
+taille de la liste suit la molette et pas le code. `/review` ne convient pas non plus, il cible
+une PR qui n'existe pas encore ici.
+
+Le niveau est collant : sans niveau écrit, `/code-review` reprend le dernier tapé. **Écris-le à
+chaque appel**, sinon la passe de fix après la finale repart en `high`.
 
 ## L'argument unique
 
@@ -138,8 +142,6 @@ Pour chaque tranche :
    le **révoques** (`git checkout --`) et la ligne va sous `Reporté`. Aucun « tant qu'on y est »,
    aucun renommage d'opportunité, aucune abstraction absente du plan.
 3. `/code-review medium` **sur le diff de cette tranche uniquement**, jamais sur la branche.
-   `medium` s'écrit explicitement à chaque appel : le niveau est collant, un seul oubli et la
-   review repart à `xhigh`.
 4. Corriger ce qui est `CONFIRMED` **et** dans le plan. Le reste va sous `Reporté`. Zéro finding
    sur une tranche est un résultat normal : tu commites et tu passes à la suivante sans chercher
    à en produire.
@@ -172,38 +174,30 @@ la corrige sans que personne ait à lire une liste.
 - Ses modifications repassent par le **contrôle de scope de la phase 2** : tout fichier hors
   liste est révoqué et versé sous `Reporté`, sans discussion, même si le nettoyage est juste.
   Quatre agents qui nettoient en parallèle débordent vite, c'est le seul risque de cette phase.
-- Ce qu'elle a changé part dans un commit à part, pas fondu dans les tranches.
+- Ce qu'elle a changé part en commits `git commit --fixup=<sha>`, un par tranche touchée : ils
+  restent lisibles à part jusqu'à la phase 7, qui les fond dans leur tranche.
 
 ## Phase 4. Gates mécaniques
 
-La skill de gates CI du repo si elle existe, sinon lint + typecheck + suite de tests. Rouge, tu
-répares. Ne rapporte pas un gate rouge comme un résultat.
+La skill de gates CI du repo si elle existe, sinon la skill `ci-parity`. Rouge, tu répares. Ne
+rapporte pas un gate rouge comme un résultat.
 
 ## Phase 5. Preuve runtime
 
 Obligatoire dès qu'une tranche touche une surface visible. Une suite de tests verte n'est pas
 une preuve runtime, et sans preuve la tâche n'est pas finie.
 
-Si le repo a une skill de pilotage navigateur, utilise-la : elle porte les URL locales, les
-comptes de test et les pièges de cache propres au projet.
-
-Sinon, sur cette machine : **n'appelle pas les outils `mcp__plugin_playwright_playwright__*`**,
-le serveur cherche un Chrome qui n'est pas installé et le canal ne se surcharge pas par appel.
-Pilote un Chromium depuis un script Node. `ls ~/Library/Caches/ms-playwright` (le chemin macOS,
-pas `~/.cache`) donne les builds réellement présents ; passe celui-là en `executablePath` à
-`chromium.launch()`. Rien en cache : lance
-`/Applications/Chromium.app/Contents/MacOS/Chromium --headless=new --remote-debugging-port=<p>`
-et pilote-le en CDP avec le `WebSocket` global de Node. N'installe pas de navigateur.
-
-Joue le parcours écrit dans le plan, pas un autre. Capture avant/après si c'est un correctif
-visuel, et range les captures dans le scratchpad, pas dans le repo. Souvent plus fort qu'une
-capture : assertion sur les appels réseau réellement partis (`page.on("response", …)`), qui
-prouve par exemple qu'une section verrouillée ne déclenche aucune requête plutôt qu'un 403.
+La skill de pilotage navigateur du repo si elle existe, sinon la skill `runtime-proof`. Joue le
+parcours écrit dans le plan, pas un autre. Captures dans le dossier de la PR que décrit
+`commits-and-prs`, jamais dans le repo.
 
 ## Phase 6. Review finale
 
-Relis d'abord le plan gelé, puis lance **une** `/code-review medium` sur la branche nettoyée, en
+Relis d'abord le plan gelé, puis lance **une** `/code-review high` sur la branche nettoyée, en
 lui donnant les sections « Dans le scope » et « Hors scope » dans le prompt.
+
+Si ses findings reviennent sans verdict `CONFIRMED` / `PLAUSIBLE`, `high` n'a pas vérifié et le
+tri qui suit ne tient plus : relance en `medium` et dis-le dans le rapport.
 
 **Il n'y a pas de quota de findings, ni plancher ni plafond.** Une PR propre qui ressort zéro
 finding est le résultat attendu du reste de la skill, pas un échec de la review ; ne cherche
@@ -214,8 +208,9 @@ Ce qui est borné, c'est la **boucle**, pas la sortie :
 
 - ne corrige que ce qui est `CONFIRMED` **et** couvert par le plan ; un finding juste mais hors
   plan va sous `Reporté`, il ne se corrige pas sur cette branche ;
-- après correction, une seconde passe sur le **diff des commits de fix** uniquement, jamais sur
-  la branche entière, sinon les mêmes arbitrages se repayent ;
+- chaque correction part en `git commit --fixup=<sha de la tranche>` ;
+- après correction, une seconde passe `/code-review medium` sur le **diff des commits de fix**
+  uniquement, jamais sur la branche entière, sinon les mêmes arbitrages se repayent ;
 - **la boucle s'arrête quand une passe ne remonte rien de nouveau.** C'est la seule condition de
   sortie ;
 - si une passe remonte encore du neuf hors du périmètre des fix, ne relance pas : arrête, dis-le,
@@ -227,6 +222,16 @@ créer aucun.
 ## Phase 7. Livraison
 
 C'est la tâche de fin du run : sans PR ouverte, le run n'est pas terminé.
+
+Invoquer `/full-implem` vaut accord pour ses commits, son push et sa PR draft : pas de
+confirmation à redemander, contrairement au défaut de `commits-and-prs`.
+
+Fonds d'abord les fixup des phases 3 et 6 dans leur tranche :
+`GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash <base>`. L'arbre final ne change pas, donc les
+gates de la phase 4 restent valides ; `git log --oneline <base>..HEAD` ne doit plus montrer que
+les tranches.
+Exception, le mode reprise sur une PR déjà relue par un humain : pas de fixup ni de réécriture,
+des commits correctifs par-dessus (`commits-and-prs`, « Retours de review »).
 
 Commits atomiques, au nom de l'utilisateur git. **Jamais de trailer `Co-Authored-By: Claude`,
 jamais de footer « Generated with Claude Code »**, c'est une règle permanente de son CLAUDE.md
@@ -246,7 +251,7 @@ et tu affiches la commande prête.
 
 Avant d'avoir le droit de rendre la main, relis le plan gelé et vérifie ligne à ligne : chaque
 tranche livrée ou explicitement reportée, gates verts, preuve runtime produite pour le parcours
-que le plan nomme, passe qualité passée, review finale convergée, PR ouverte. Une case non
+que le plan nomme, passe qualité passée, review finale convergée, fixup fondus, PR ouverte. Une case non
 cochée n'est pas un point à signaler dans le rapport, c'est du travail à finir : reprends la
 phase concernée.
 
@@ -300,7 +305,8 @@ gabarit.
 
 ## Jamais
 
-- `/code-review` sans niveau, ou à `high` et au-dessus, quel que soit l'argument avancé ;
+- `/code-review` sans niveau, à `xhigh` ou `max`, ou à `high` ailleurs qu'en première passe de
+  la phase 6, quel que soit l'argument avancé ;
 - corriger un finding hors plan parce qu'il est valide ;
 - produire un finding pour ne pas rendre une review vide, ou en taire un réel pour tenir un
   compte ;
@@ -310,6 +316,7 @@ gabarit.
 - ajouter une tranche, un renommage ou une abstraction absente du plan gelé ;
 - relancer une passe de review qui porterait sur toute la branche plutôt que sur le diff des
   fix ;
+- pousser des commits `fixup!` non fondus ;
 - créer un ticket dans le tracker ;
 - installer quoi que ce soit : navigateur, `wtm`, CLI de forge, dépendance ;
 - merger, ou sortir une PR du draft.

@@ -38,7 +38,7 @@ GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash <base>
 
 **Une raison par commit, pas une par ligne.** À écrire : la contrainte non devinable, le piège qu'un lecteur défera par mégarde, l'alternative évidente qui ne marche pas. À ne pas écrire : le diff raconté fichier par fichier, les tests expliqués, ce que le code dit déjà.
 
-**L'agent attend un accord explicite avant `git commit`**, et avant tout push. Branche déjà poussée et réécrite avant review : `git push --force-with-lease`, jamais `--force`.
+**L'agent attend un accord explicite avant `git commit`**, et avant tout push. Invoquer une skill qui livre (`full-implem`) vaut cet accord. Branche déjà poussée et réécrite avant review : `git push --force-with-lease`, jamais `--force`.
 
 ## Pull requests
 

@@ -99,6 +99,9 @@ vocabulaire git :**
 herdr agent prompt w1:p1Y "Lis et execute /chemin/scratchpad/brief-sujet.txt"
 ```
 
+Si `~/.claude/skills/anneau-unique/projets.local.md` existe, lis-le avant d'écrire le brief : il
+porte les champs que certains projets exigent en plus de ceux-ci.
+
 Un brief qui tient la route porte, dans cet ordre :
 
 - **Son rôle** : son nom, qui est le maître, que l'utilisateur ne lui parle pas, où écrire son statut.

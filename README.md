@@ -17,10 +17,12 @@ suit le niveau d'effort demandé plutôt que le code, et un scope qui déborde d
 - **Plan gelé** : le plan approuvé est écrit sur disque et fait foi jusqu'à la fin. Ce qui n'y
   figure pas est hors scope.
 - **Tranches contrôlées** : chaque tranche compare les fichiers qu'elle a touchés à ceux que le
-  plan lui attribue.
-- **Deux relectures** : `/simplify` applique les corrections de qualité, puis
-  `/code-review medium` rapporte les problèmes de correctness.
-- **Livraison** : gates CI, preuve runtime avec Playwright, commits atomiques, PR en draft.
+  plan lui attribue, puis passe une `/code-review medium` sur son seul diff.
+- **Deux relectures** : `/simplify` applique les corrections de qualité, puis une
+  `/code-review high` sur la branche rapporte les problèmes de correctness. Les passes sur le
+  diff des fix redescendent en `medium` pour que la boucle converge.
+- **Livraison** : gates CI (`ci-parity`), preuve runtime (`runtime-proof`), fixup fondus par
+  autosquash, commits atomiques, PR en draft.
 
 Une branche propre qui ressort zéro finding est un run réussi.
 
@@ -37,7 +39,8 @@ pas.
   arbitrage, PR), un sous-agent pour une mesure ou une lecture qui rend un verdict.
 - **Les briefs** passent par un fichier, et les règles communes sont citées par leur chemin
   ([`regles-invariantes.md`](skills/anneau-unique/regles-invariantes.md)) au lieu d'être
-  recopiées.
+  recopiées. Les exigences propres à un projet vont dans un `projets.local.md` à côté, jamais
+  publié.
 - **La surveillance** se fait par abonnement (`SendMessage` avec `notify_when_idle`), pas par
   sondage.
 - **Les pièges déjà rencontrés** : un libellé d'onglet qui ment, un ouvrier « done » qui n'a pas
@@ -63,14 +66,43 @@ Le défaut pour committer, rebaser et ouvrir une PR quand le repo ne fixe pas se
 - **Captures** rangées dans un dossier par PR, relues avant d'être annoncées.
 - **Retours de review** : un commit correctif par-dessus, sans force-push.
 
+### [`ci-parity`](skills/ci-parity/SKILL.md)
+
+Rejoue en local les gates CI qui décident du merge, lues dans les workflows du repo : filtres de
+chemins scopés au diff, et les pièges où le local reste vert pendant que la CI passe au rouge
+(lockfile périmé, deps de dev, gates hors suite de tests, worktree sans stack).
+
+### [`runtime-proof`](skills/runtime-proof/SKILL.md)
+
+Prouve un changement en pilotant la vraie app locale, headless : ce qu'il faut savoir du projet
+avant (URL, comptes, flags, reset), la séquence avant / action / rechargement / recoupement en
+base, et les pièges (cache client sur `goto`, snapshot qui lit le DOM et pas la mise en page,
+droits figés dans le token).
+
+## Les rules
+
+[`rules/`](rules) contient des règles courtes chargées par toutes les sessions, là où une skill
+ne serait lue qu'à la demande : n'arrêter que ses propres process, pas de `git stash` nu entre
+worktrees, pas d'écriture Jira sans accord direct, et la façon de rapporter une preuve.
+
 ## Installation
 
 ```bash
 git clone https://github.com/manuelLandreau/claude-skills
 cp -R claude-skills/skills/* ~/.claude/skills/
+mkdir -p ~/.claude/rules && cp claude-skills/rules/* ~/.claude/rules/
 ```
 
-Les skills sont alors disponibles dans toutes les sessions Claude Code.
+Les skills et les rules sont alors disponibles dans toutes les sessions Claude Code.
+
+Pour mettre la sauvegarde à jour depuis le poste, les versions locales étant déjà génériques :
+
+```bash
+for s in full-implem anneau-unique commits-and-prs ci-parity runtime-proof; do
+  rsync -a --delete --exclude='*.local.md' --exclude='.DS_Store' ~/.claude/skills/$s/ skills/$s/
+done
+rsync -a --delete ~/.claude/rules/ rules/
+```
 
 ## Hypothèses d'environnement
 

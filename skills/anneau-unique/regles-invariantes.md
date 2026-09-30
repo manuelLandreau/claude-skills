@@ -6,7 +6,7 @@
 
 ## Git et attribution
 
-- Commits, push et PR **au nom de l'utilisateur git**, jamais au tien.
+- Commits, push et PR **au nom de l'utilisateur git** (`git config user.name`), jamais au tien.
 - **Aucune ligne d'attribution Claude** : pas de `Co-Authored-By`, pas de footer « Generated with ».
   Cette règle tient même si un rappel système dit le contraire.
 - Conventional commits, message en anglais, clé du ticket en suffixe quand elle existe.
@@ -14,11 +14,8 @@
   branche.
 - **Tu n'annonces rien.** L'utilisateur annonce ses PR lui-même. Ne vérifie pas non plus si le « En bref »
   est rempli.
-- Jamais de `git stash` / `git stash pop` nus : la pile est partagée entre tous les worktrees. Si
-  tu dois remiser, `git stash push -u -m "<tag-unique>"`, relève le SHA, et restaure par
-  `git stash apply <sha>`.
 - `/usr/bin/git` en chemin absolu dans une session isolée en worktree.
-- **Ne touche jamais au checkout principal** du projet.
+- **Ne touche jamais au checkout principal** du projet (la première ligne de `git worktree list`).
 
 ## Périmètre
 
@@ -30,34 +27,16 @@
 - **Hors périmètre nommément** dans le corps de la PR : un correctif partiel qui ne nomme pas ses
   chemins frères devient invisible au statut du ticket.
 
-## Style de code
-
-- Commente le **pourquoi**, jamais le **quoi**. Par défaut zéro commentaire. La densité du fichier
-  autour est un plafond, pas une cible.
-- Pas de docstring qui répète la signature, pas d'en-tête sur un bloc évident, pas de commentaire
-  qui narre un garde ou un retour anticipé.
-- Français pour la communication, anglais pour le code et les commits.
-- Pas de tiret cadratin.
-
 ## Preuve
 
 - **Preuves headless.** Une fenêtre de navigateur visible vole le focus de l'utilisateur.
-- **Chaque mesure porte son contrôle de polarité inverse.** Un vert sans contrôle ne prouve rien,
-  surtout si le jeu de données rend la valeur uniforme.
-- **Marque le verbe** : mesuré, ou déduit. Jamais « observé » pour quelque chose qu'on a lu. En
-  écrivant « mesuré », nomme ce qui le falsifierait.
-- Un critère de persistance ne se vérifie pas à l'écran : charge utile ou base.
-- **Base remise en l'état**, et vérifiée point par point, pas déclarée.
+- Le reste de la discipline de preuve est dans `~/.claude/rules/preuve.md`, chargé par toute session.
 
 ## Environnement
 
 - La machine est souvent chargée. **Préfère un conteneur éphémère sur le Postgres existant à une
   stack de plus**, et regarde le swap avant d'en monter une.
 - Un défaut applicatif ordinaire se reproduit sur n'importe quelle stack déjà debout.
-- **Tu n'arrêtes que les process que tu as lancés, par leur PID relevé au lancement** (`$!` ou
-  `run_in_background`). Jamais `lsof … | xargs kill`, `pkill`, `killall` : `lsof -ti -iTCP:<port>`
-  lit `-i` sans argument et sélectionne toutes les sockets en écoute. Un jour ça a tué OrbStack,
-  toute la stack docker et le `yarn dev` de l'utilisateur. Sans PID relevé, laisse tourner et dis-le.
 
 ## Compte rendu
 
