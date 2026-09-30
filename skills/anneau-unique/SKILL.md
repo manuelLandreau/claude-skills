@@ -1,6 +1,6 @@
 ---
 name: anneau-unique
-description: "Piloter des sessions Claude ouvrières dans des onglets Herdr depuis une session maître : ouvrir un onglet, briefer, surveiller, récolter, puis purger (/clear, /compact) ou fermer. À utiliser quand on dispatche du travail à d'autres onglets Herdr, qu'on supervise plusieurs chantiers en parallèle, ou qu'on fait le ménage des onglets entre deux sujets. Suppose HERDR_ENV=1."
+description: "Piloter des sessions Claude ouvrières dans des onglets Herdr depuis une session maître : ouvrir un onglet, briefer, surveiller, récolter, puis purger (/clear, /compact) ou fermer, et choisir entre un onglet et un sous-agent. À utiliser quand on dispatche du travail à d'autres onglets Herdr, qu'on supervise plusieurs chantiers en parallèle, ou qu'on fait le ménage des onglets entre deux sujets. Suppose HERDR_ENV=1."
 ---
 
 # L'anneau unique
@@ -22,6 +22,25 @@ ouvrir → briefer → surveiller → récolter → purger ou fermer
 
 Tu ne passes jamais à l'étape suivante sans la précédente. Un ouvrier briefé sans récolte est du
 travail perdu ; un onglet fermé sans récolte est du travail détruit.
+
+## 0. Onglet ou sous-agent ?
+
+Tout ne mérite pas un onglet. Tranche au moment de dispatcher :
+
+| Le travail | Où il va |
+|---|---|
+| Correctif qui passe par un plan, des arbitrages en route et une PR | **Onglet Herdr** |
+| Tâche de plusieurs heures qui doit survivre à ton `/compact` ou à la nuit | **Onglet Herdr** |
+| Mesure, reproduction, comptage, lecture de code pour trancher une question : 10 à 30 min, un verdict au bout | **Sous-agent** (`Agent`, `isolation: "worktree"` s'il écrit) |
+| Rejeu de vérification sur une branche existante, sans décision à prendre | **Sous-agent** |
+
+Ce qui décide, c'est **le besoin de s'arrêter pour demander**. Un onglet peut poser une question,
+attendre ta réponse et repartir avec tout son contexte ; un sous-agent ne peut que s'arrêter et
+te rendre la main. En échange, le sous-agent ne demande aucune surveillance : son rapport te
+revient tout seul, sans lecture de pane ni abonnement.
+
+Un sous-agent reçoit le même brief qu'un onglet (§ 3), règles invariantes comprises, et son
+rapport se vérifie de la même façon (§ 6).
 
 ## 1. Avant tout brief : lis le contexte de l'ouvrier
 
@@ -93,7 +112,13 @@ Un brief qui tient la route porte, dans cet ordre :
 - **Les règles qui ne changent pas** : ne les recopie pas, **cite le fichier**
   `~/.claude/skills/anneau-unique/regles-invariantes.md` et demande-lui de le lire. Recopier à la
   main fabrique une dérive entre deux briefs, et c'est toujours la règle oubliée qui coûte.
-- **Ce que tu veux en retour**, en liste.
+- **La chaîne de travail**, explicitement : `/full-implem` de bout en bout, `/full-implem` en
+  mode reprise (fin de chaîne seulement), ou pas de skill. Un ordre qui dit seulement « invoque
+  /full-implem pour la fin de chaîne » laisse le développement hors skill, et l'utilisateur le
+  découvre après la PR.
+- **Ce que tu veux en retour**, en liste, avec **des chemins absolus**. Chaque ouvrier a son
+  propre scratchpad : un « voir scratchpad/corps_pr.md » ne se retrouve pas depuis le maître ni
+  depuis l'ouvrier suivant.
 
 Quand la question produit n'est pas tranchée, **dis-lui de s'arrêter et de te rendre des options
 chiffrées**. Un ouvrier qui invente une règle métier livre un défaut de plus.
@@ -112,6 +137,20 @@ Enchaîne ensuite sur le prompt qui pointe le nouveau brief.
 
 `/compact` quand le contexte compte encore pour la suite, `/clear` quand le sujet est clos.
 
+**Une commande slash ne s'envoie qu'à un ouvrier inactif.** Envoyée pendant qu'il travaille, elle
+part en file, et deux prompts envoyés coup sur coup **se collent en un seul message** : on a vu
+arriver « …/brief.txt/effort medium », lu comme un chemin. Attends l'inactivité, un prompt à la
+fois, et relis le pane entre les deux.
+
+Certaines commandes ouvrent une confirmation : `/effort` en cours de conversation demande
+« Change effort level? » parce que le cache sera relu. Réponds par
+`herdr pane send-keys <pane> Enter`, puis vérifie la ligne d'état (`◐ high · /effort`).
+
+**L'effort se règle à l'ouverture, avant le brief.** Sur une conversation vide, `/effort high` ne
+demande pas de confirmation et rien n'est relu. Par défaut `high` : un ouvrier planifie, arbitre et
+prouve, c'est là que l'effort paie. Descends en `medium` seulement si l'utilisateur dit que le
+quota hebdo est serré : la limite bloque tous les onglets en même temps, `/compact` compris.
+
 ## 5. Surveiller : abonne-toi, ne sonde pas
 
 **Le bon outil est `SendMessage` avec `notify_when_idle: true` et sans message.** C'est un
@@ -124,6 +163,36 @@ SendMessage({to: "fix-export-button", notify_when_idle: true})
 
 Abonne-toi **au moment où tu briefes**, pas plus tard. Sans ça tu découvriras qu'un ouvrier a fini
 il y a une heure en posant une question sans rapport, et c'est du temps de machine perdu pour rien.
+
+**Le nom `ListAgents` d'un ouvrier change en cours de vie.** Après un `/clear`, une validation de
+plan ou un changement de sujet, la session se renomme d'elle-même (`mon-projet-96` devient par exemple
+`fix-scoped-request-filter`). Un abonnement sur l'ancien nom échoue avec « No agent
+named ». **Refais `ListAgents` avant chaque abonnement**, et tiens une table nom Herdr → pane →
+nom `ListAgents` que tu mets à jour à chaque purge.
+
+L'avis d'inactivité peut arriver **en double**, avec le même résumé. Un avis identique au
+précédent ne dit rien de neuf : ne te réabonne pas en boucle, relis le pane au tour suivant.
+
+## 5 bis. Un ouvrier bloqué sur une question
+
+Un ouvrier peut s'arrêter sur un écran qui attend une touche, et **rien ne te prévient** :
+validation de plan (« Would you like to proceed? »), question à choix (`AskUserQuestion`),
+confirmation de `/effort`, menu de limite atteinte (`/rate-limit-options`).
+
+Le signal : `herdr agent prompt` rend `agent_blocked … requires interactive input`. Dans ce cas :
+
+1. `herdr pane read <pane>` et lis la question en entier, options comprises.
+2. Si la réponse découle de ce que l'utilisateur a déjà tranché, réponds :
+   `herdr pane send-keys <pane> Enter` pour l'option en tête (souvent « (Recommandé) »), les
+   flèches avant sinon. Pour une validation de plan, lis le fichier de plan d'abord : il est
+   dans `~/.claude/plans/<nom>.md`, affiché sous le menu.
+3. Si elle ne découle de rien de tranché, **pose-la à l'utilisateur**, avec le contexte et ta
+   recommandation. Ne choisis pas à sa place une règle métier.
+4. Relis le pane : la validation d'un plan peut purger le contexte de l'ouvrier (`ctx` retombe),
+   et une précision que tu voulais ajouter doit alors partir en prompt séparé.
+
+Après une limite hebdomadaire, vérifie chaque ouvrier à la réinitialisation : celui qui a choisi
+« attendre » repart seul, les autres restent sur le menu.
 
 `herdr agent wait <pane> --until done --timeout <ms>` existe aussi mais il **bloque** : réserve-le
 au cas où tu attends vraiment ce résultat-là pour continuer.
@@ -153,6 +222,7 @@ rien**, lis le pane.
 | Même ouvrier, nouveau sujet | **`/clear`**, puis le nouveau brief |
 | En cours de tâche | **Laisse.** Une question en file si besoin |
 | Inactif mais porteur d'une décision en attente | **Récolte la décision**, puis ferme |
+| Lot fini, stack wtm encore debout | **`wtm stop <branche>`**, pas `remove` : le jeu de mesure reste relisible. `wtm list` en fin de journée, aucune ligne `up` sans ouvrier actif |
 
 `herdr tab close` prend l'identifiant d'**onglet** (`w1:t1X`), pas celui de pane (`w1:p1Y`). Les
 deux se lisent dans `herdr agent list`.
@@ -163,6 +233,18 @@ deux se lisent dans `herdr agent list`.
 manuel. J'ai pris mon propre pane pour une autre session pendant des heures à cause de ça.
 **Identifie une session par son UUID** (`agent_session.value` dans `herdr agent list`), jamais par
 le titre.
+
+**Un prompt peut rester tapé sans jamais partir.** `herdr agent prompt` écrit le texte dans la zone
+de saisie de l'ouvrier, et quand l'ouvrier est occupé au moment de l'envoi, **le texte y reste sans
+être soumis**. Le pane affiche alors un `❯ mon ordre` que personne ne lit, l'ouvrier reste inactif,
+et `agent_status` dit `idle` — ce qui se lit « il a fini » et non « il attend un ordre qui n'est
+jamais arrivé ». Ça m'a coûté quatre heures sur un ouvrier prêt à pousser deux branches.
+**Relis le pane après chaque brief** : si ton ordre apparaît au niveau du `❯` au lieu de défiler
+dans l'historique, il n'est pas parti. `send-keys <pane> Enter` ne le rattrape pas toujours ;
+renvoie le prompt.
+
+À distinguer du prompt **mis en file**, qui partira : le pane affiche alors « Press up to edit
+queued messages » (ou « ctrl+enter to send now ») et l'ouvrier est `working`. Celui-là, laisse-le.
 
 **Un ouvrier « done » n'est pas un ouvrier vide.** Il peut tenir un correctif non commité. Vérifie
 son statut et son worktree avant de le purger.
@@ -189,7 +271,9 @@ ouvrier se souvient comme un arbitrage si tu la ranges mal. Garde le verbe : mes
 **Valide contre un signal objectif avant de relayer.** Un auto-rapport n'est pas une preuve : va
 lire `git log`, l'état de la PR (`mergedAt`, pas « open »), la sortie des gates, le fichier. Relayer
 « c'est corrigé » sur la foi d'un compte rendu est la façon la plus rapide de faire prendre une
-décision sur du faux.
+décision sur du faux. Exemple : une PR annoncée « non draft, CI verte » était en draft, donc sans
+aucune CI. Après toute ouverture de PR, lance toi-même
+`gh pr view <n> --json isDraft,state,headRefOid` avant de relayer.
 
 **Quand un ouvrier annonce une limite à ce qu'il a établi, transporte-la.** « Seul l'axe X est
 mesuré, pas l'axe Y » doit survivre au relais, sinon le maître élargit un constat étroit et le
@@ -198,9 +282,12 @@ correctif part trop large.
 ## La checklist à jouer
 
 1. `HERDR_ENV=1` vérifié.
-2. `herdr agent list`, identifiés par UUID et pas par titre.
-3. Contexte lu pour chaque ouvrier concerné, une commande par ligne.
-4. Au-delà de 50 % : `/clear` ou `/compact` avant de briefer.
-5. Brief écrit dans un fichier, prompt d'une ligne qui le pointe.
-6. Statut récolté avant toute conclusion sur un ouvrier.
-7. Onglets fermés seulement si le travail est en sécurité, et dit où.
+2. Onglet ou sous-agent tranché (§ 0).
+3. `herdr agent list`, identifiés par UUID et pas par titre ; `ListAgents` refait.
+4. Contexte lu pour chaque ouvrier concerné, une commande par ligne.
+5. Au-delà de 50 % : `/clear` ou `/compact` avant de briefer, ouvrier inactif.
+6. Brief écrit dans un fichier, chaîne de travail dite, prompt d'une ligne qui le pointe.
+7. Pane relu : ordre parti ou en file, pas resté au `❯`, pas d'écran bloqué.
+8. Abonné à son inactivité sous son nom `ListAgents` du moment.
+9. Statut récolté et vérifié contre un signal objectif avant toute conclusion.
+10. Onglets fermés et stacks arrêtées seulement si le travail est en sécurité, et dit où.

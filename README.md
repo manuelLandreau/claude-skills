@@ -33,13 +33,16 @@ onglets du multiplexeur Herdr. Le maître dispatche et supervise, il ne code
 pas.
 
 - **Le cycle d'un ouvrier** : ouvrir, briefer, surveiller, récolter, puis purger ou fermer.
+- **Onglet ou sous-agent** : un onglet quand le travail devra s'arrêter pour demander (plan,
+  arbitrage, PR), un sous-agent pour une mesure ou une lecture qui rend un verdict.
 - **Les briefs** passent par un fichier, et les règles communes sont citées par leur chemin
   ([`regles-invariantes.md`](skills/anneau-unique/regles-invariantes.md)) au lieu d'être
   recopiées.
 - **La surveillance** se fait par abonnement (`SendMessage` avec `notify_when_idle`), pas par
   sondage.
 - **Les pièges déjà rencontrés** : un libellé d'onglet qui ment, un ouvrier « done » qui n'a pas
-  commité, un statut périmé, un auto-rapport pris pour une preuve.
+  commité, un statut périmé, un auto-rapport pris pour une preuve, un prompt resté tapé sans partir, un
+  ouvrier bloqué sur une question.
 
 Les ouvriers portent des noms du Seigneur des anneaux. Ces noms ne changent pas quand le sujet
 change, contrairement à un nom tiré de la tâche.

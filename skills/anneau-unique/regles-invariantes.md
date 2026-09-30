@@ -54,6 +54,10 @@
 - La machine est souvent chargée. **Préfère un conteneur éphémère sur le Postgres existant à une
   stack de plus**, et regarde le swap avant d'en monter une.
 - Un défaut applicatif ordinaire se reproduit sur n'importe quelle stack déjà debout.
+- **Tu n'arrêtes que les process que tu as lancés, par leur PID relevé au lancement** (`$!` ou
+  `run_in_background`). Jamais `lsof … | xargs kill`, `pkill`, `killall` : `lsof -ti -iTCP:<port>`
+  lit `-i` sans argument et sélectionne toutes les sockets en écoute. Un jour ça a tué OrbStack,
+  toute la stack docker et le `yarn dev` de l'utilisateur. Sans PID relevé, laisse tourner et dis-le.
 
 ## Compte rendu
 
@@ -62,3 +66,9 @@
   terminal.
 - Rends : ce que tu as mesuré, le contrôle inverse, ce que tu n'as **pas** établi, l'état des
   gates, et la branche.
+- **Chemins absolus** pour tout fichier cité (corps de PR, inventaire, scripts). Ton scratchpad
+  n'est lisible que par qui connaît son chemin complet.
+- Si tu ouvres une PR, vérifie `gh pr view <n> --json isDraft` avant d'écrire « non draft » : une
+  draft ne lance aucune CI.
+- En fin de lot, `wtm stop` sur ta stack (jamais `remove`), sauf si le maître t'a demandé de la
+  garder debout.
