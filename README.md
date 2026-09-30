@@ -107,5 +107,13 @@ rsync -a --delete ~/.claude/rules/ rules/
 ## Hypothèses d'environnement
 
 Ces skills ont été écrites pour mon poste. `full-implem` s'appuie sur `gh` ou `glab`, et au
-besoin sur `acli` et `wtm`. Elle utilise aussi un Chromium local pour les preuves runtime. Si un
+besoin sur `acli` et `wtm`. Les preuves runtime passent par un MCP Playwright headless et isolé, déclaré au niveau utilisateur
+à la place du plugin `playwright`, qui le lance sans argument (fenêtre visible, profil partagé) :
+
+```bash
+claude mcp add -s user playwright -- npx -y @playwright/mcp@latest \
+  --headless --isolated --output-dir ~/.cache/playwright-mcp/out
+claude plugin disable playwright@claude-plugins-official
+```
+ Si un
 outil manque, elle le signale et s'adapte : elle n'installe rien.

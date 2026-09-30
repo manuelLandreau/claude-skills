@@ -23,7 +23,7 @@ Chercher dans la skill du repo, puis CLAUDE.md, README, seeds, `docker-compose`,
 
 Ce qui a demandé plus de deux tours à trouver → le proposer à l'utilisateur pour une skill `testing-locally-with-playwright` **du repo**. Ne pas l'écrire dans cette skill globale : elle ne porte aucune donnée d'un projet client.
 
-Pas de skill de pilotage dans le repo ni de serveur MCP Playwright propre au projet : sur cette machine, **n'appelle pas les outils `mcp__plugin_playwright_playwright__*`**, le serveur cherche un Chrome absent et le canal ne se surcharge pas par appel. Pilote un Chromium depuis un script Node, **headless** : `ls ~/Library/Caches/ms-playwright` (le chemin macOS, pas `~/.cache`) donne les builds réellement présents, passe celui-là en `executablePath` à `chromium.launch()`. Rien en cache : lance `/Applications/Chromium.app/Contents/MacOS/Chromium --headless=new --remote-debugging-port=<p>` et pilote-le en CDP avec le `WebSocket` global de Node. N'installe pas de navigateur.
+Pas de skill de pilotage dans le repo ni de serveur MCP Playwright propre au projet : utilise le MCP utilisateur `playwright` (outils `mcp__playwright__*`). Il tourne headless et `--isolated`, profil en mémoire, donc plusieurs sessions en parallèle ne se bloquent pas sur un profil partagé. Absent de la session : script Node avec le Playwright du projet, les navigateurs téléchargés sont dans `~/Library/Caches/ms-playwright` (pas `~/.cache`). N'installe pas de navigateur.
 
 Stack éteinte, ou front qui ne sert pas l'arbre validé (worktree contre checkout principal) → **bloqué**, le dire. Ne jamais se rabattre sur un autre environnement.
 
@@ -36,7 +36,7 @@ Stack éteinte, ou front qui ne sert pas l'arbre validé (worktree contre checko
 5. Recouper en base, et dans les logs, que la requête attendue est passée.
 6. Remettre la donnée de dev dans son état initial.
 
-Une capture n'est pas une preuve, le parcours l'est. Souvent plus fort qu'une capture : une assertion sur les appels réseau réellement partis (`page.on("response", …)`), qui prouve par exemple qu'une section verrouillée ne déclenche aucune requête plutôt qu'un 403. Un critère = un parcours ; les parcours indépendants tournent tous, un échec n'annule pas les autres. Ce qui n'a pas de surface UI (API, e-mail, tâche asynchrone, ligne en base) se prouve par `curl`, requête SQL ou log, et se rapporte comme preuve hors navigateur.
+Une capture n'est pas une preuve, le parcours l'est. Souvent plus fort qu'une capture : une assertion sur les appels réseau réellement partis (`browser_network_requests`, ou `page.on("response", …)` en script), qui prouve par exemple qu'une section verrouillée ne déclenche aucune requête plutôt qu'un 403. Un critère = un parcours ; les parcours indépendants tournent tous, un échec n'annule pas les autres. Ce qui n'a pas de surface UI (API, e-mail, tâche asynchrone, ligne en base) se prouve par `curl`, requête SQL ou log, et se rapporte comme preuve hors navigateur.
 
 ## 3. Pièges vérifiés
 
@@ -44,7 +44,7 @@ Une capture n'est pas une preuve, le parcours l'est. Souvent plus fort qu'une ca
 
 **Un snapshot d'accessibilité lit le DOM, pas la mise en page.** Débordement, texte cassé mot à mot, éléments superposés, panneau qui recouvre l'écran : tout passe le snapshot. **Relire chaque capture (`Read`) avant de l'annoncer.**
 
-**Les captures du MCP Playwright ne vont pas où on les demande.** Il refuse les chemins hors du repo et écrit à sa racine. Donner un nom simple, puis `mv` vers le dossier de la PR — `~/Desktop/<branche sans préfixe feat/|fix/>/<clé>-<id>-avant.png` — et vérifier que `git status` ne montre aucun PNG.
+**Les captures du MCP Playwright ne vont pas où on les demande.** Un nom relatif s'écrit dans le cwd, donc à la racine du repo ; un chemin absolu hors de `~/.cache/playwright-mcp/out` (son `--output-dir`) est refusé. Donne un chemin absolu sous ce dossier, puis `mv` vers le dossier de la PR — `~/Desktop/<branche sans préfixe feat/|fix/>/<clé>-<id>-avant.png` — et vérifie que `git status` ne montre aucun PNG.
 
 **Headless par défaut.** Une fenêtre visible vole le focus de l'utilisateur, et il peut y toucher. Si on te demande un navigateur visible, une donnée qui change sans action de ta part n'est pas forcément un bug : demander avant de conclure, puis rejouer depuis un état remis à plat pour que la preuve soit attribuable.
 
