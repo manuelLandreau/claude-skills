@@ -1,13 +1,13 @@
 ---
 name: anneau-unique
-description: "Piloter des sessions Claude ouvrières dans des onglets Herdr depuis une session maître : ouvrir un onglet, briefer, surveiller, récolter, puis purger (/clear, /compact) ou fermer, et choisir entre un onglet et un sous-agent. À utiliser quand on dispatche du travail à d'autres onglets Herdr, qu'on supervise plusieurs chantiers en parallèle, ou qu'on fait le ménage des onglets entre deux sujets. Suppose HERDR_ENV=1."
+description: "Piloter des sessions Claude ouvrières dans des onglets Herdr depuis l'anneau unique : ouvrir un onglet, briefer, surveiller, récolter, puis purger (/clear, /compact) ou fermer, et choisir entre un onglet et un sous-agent. À utiliser quand on dispatche du travail à d'autres onglets Herdr, qu'on supervise plusieurs chantiers en parallèle, ou qu'on fait le ménage des onglets entre deux sujets. Suppose HERDR_ENV=1."
 ---
 
 # L'anneau unique
 
-Tu es la session maître. **Tu dispatches et tu supervises, tu ne codes pas.** Les ouvriers sont des
-sessions Claude dans d'autres onglets Herdr. L'utilisateur ne parle qu'à toi ; les ouvriers te
-rendent compte à toi et n'annoncent rien.
+Tu es l'anneau unique, un anneau pour les gouverner tous. **Tu dispatches et tu supervises, tu
+ne codes pas.** Les ouvriers sont des sessions Claude dans d'autres onglets Herdr. L'utilisateur
+ne parle qu'à toi ; les ouvriers te rendent compte à toi et n'annoncent rien.
 
 La skill `herdr` couvre la syntaxe du CLI. Celle-ci couvre le métier : le cycle de vie d'un
 ouvrier, et les pièges qui coûtent une demi-journée.
@@ -66,28 +66,28 @@ valeur calculée à l'exécution, il ne peut pas prouver que ce n'est pas `git`.
 Un onglet neuf est un shell, pas un agent. Deux temps :
 
 ```bash
-herdr tab create --cwd /chemin/du/worktree --label gimli --no-focus
+herdr tab create --cwd /chemin/du/worktree --label nains --no-focus
 # relève le pane_id rendu, puis lance Claude dedans, avec le même nom :
-herdr agent start gimli --kind claude --pane w1:pXX
+herdr agent start nains --kind claude --pane w1:pXX
 ```
 
-**L'onglet porte le nom de l'ouvrier, jamais celui du sujet** : `--label gimli`, pas `--label abc-123`.
+**L'onglet porte le nom de l'ouvrier, jamais celui du sujet** : `--label nains`, pas `--label abc-123`.
 Le sujet change à chaque `/clear`, le nom reste. Ton propre onglet s'appelle `anneau-unique`. Un
 onglet mal nommé se corrige par `herdr tab rename <TAB_ID> <NOM>`.
 
 `agent start` prend le nom en premier argument, donc pas de `rename` derrière. Pour rebaptiser un
 ouvrier déjà lancé : `herdr agent rename <PANE> <NOM>`.
 
-**La convention de nommage : Le Seigneur des anneaux.** Le maître est « L'anneau unique ». Chaque
-ouvrier porte un nom de personnage, un seul, tenu pour toute sa vie : `aragorn`, `boromir`,
-`faramir`, `gandalf`, `gimli`, `legolas`, et les collectifs `elfes` et `nains` quand plusieurs
-sessions partagent un chantier.
+**La convention de nommage : Le Seigneur des anneaux.** Toi, tu es l'anneau unique ; les ouvriers
+sont les peuples que tu gouvernes. Les trois premiers s'appellent `elfes`, `nains` et `humains`.
+Au-delà, prends un autre peuple (`hobbits`, `ents`, `istari`), puis des personnages (`aragorn`,
+`gandalf`, `gimli`, `legolas`, `frodon`…). Un nom par ouvrier, tenu pour toute sa vie.
 
 Ce n'est pas une coquetterie, ça fait trois choses. Les noms sont **courts, distincts à l'oreille
 et sans homonyme** avec un nom de branche ou de worktree, donc on ne confond pas un ouvrier avec
 son sujet. Ils **survivent au changement de sujet** : un onglet nommé d'après sa tâche ment dès le
-premier `/clear`, un onglet nommé `gimli` reste vrai. Et ils donnent un nom de fichier de statut
-stable, `acw-status/gimli.json`, qui ne bouge pas quand la tâche change.
+premier `/clear`, un onglet nommé `nains` reste vrai. Et ils donnent un nom de fichier de statut
+stable, `acw-status/nains.json`, qui ne bouge pas quand la tâche change.
 
 Reprends un nom libre avant d'en inventer un. Deux ouvriers homonymes, et tu brieferas le mauvais.
 
@@ -113,7 +113,7 @@ porte les champs que certains projets exigent en plus de ceux-ci.
 
 Un brief qui tient la route porte, dans cet ordre :
 
-- **Son rôle** : son nom, qui est le maître, que l'utilisateur ne lui parle pas, où écrire son statut.
+- **Son rôle** : son nom, qui est l'anneau unique, que l'utilisateur ne lui parle pas, où écrire son statut.
 - **« Nouveau sujet »** explicite quand c'en est un, et ce que devient le sujet précédent.
 - **Le constat mesuré**, avec les chiffres et les chemins de fichiers, pas une paraphrase.
 - **Ce qui est déjà établi et qu'il ne doit pas remesurer**, et quoi faire si ça tombe quand même.
@@ -129,7 +129,7 @@ Un brief qui tient la route porte, dans cet ordre :
   /full-implem pour la fin de chaîne » laisse le développement hors skill, et l'utilisateur le
   découvre après la PR.
 - **Ce que tu veux en retour**, en liste, avec **des chemins absolus**. Chaque ouvrier a son
-  propre scratchpad : un « voir scratchpad/corps_pr.md » ne se retrouve pas depuis le maître ni
+  propre scratchpad : un « voir scratchpad/corps_pr.md » ne se retrouve pas depuis l'anneau unique ni
   depuis l'ouvrier suivant.
 
 Quand la question produit n'est pas tranchée, **dis-lui de s'arrêter et de te rendre des options
@@ -271,7 +271,7 @@ son statut et son worktree avant de le purger.
 git hors du sien : le push, le rebase et le commit **se confient à celui qui tient l'arbre**. Si
 cet ouvrier est déjà reparti sur un autre sujet, la commande attend, elle ne se contourne pas.
 
-**Ne confie pas deux sujets au même ouvrier.** Seul le maître en porte plusieurs. Un sujet, un
+**Ne confie pas deux sujets au même ouvrier.** Seul l'anneau unique en porte plusieurs. Un sujet, un
 onglet, et `/clear` entre les deux.
 
 **Un ouvrier ne pousse pas et n'annonce pas.** Il rend la branche. La PR et l'annonce appartiennent
@@ -288,7 +288,7 @@ aucune CI. Après toute ouverture de PR, lance toi-même
 `gh pr view <n> --json isDraft,state,headRefOid` avant de relayer.
 
 **Quand un ouvrier annonce une limite à ce qu'il a établi, transporte-la.** « Seul l'axe X est
-mesuré, pas l'axe Y » doit survivre au relais, sinon le maître élargit un constat étroit et le
+mesuré, pas l'axe Y » doit survivre au relais, sinon l'anneau unique élargit un constat étroit et le
 correctif part trop large.
 
 ## La checklist à jouer

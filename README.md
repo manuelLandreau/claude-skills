@@ -30,9 +30,9 @@ Usage : `/full-implem PROJ-123 garde le scope, front seulement`
 
 ### [`anneau-unique`](skills/anneau-unique/SKILL.md)
 
-Sert à piloter plusieurs sessions Claude « ouvrières » depuis une session maître, dans des
-onglets du multiplexeur Herdr. Le maître dispatche et supervise, il ne code
-pas.
+Sert à piloter plusieurs sessions Claude « ouvrières » depuis une session « anneau unique », dans
+des onglets du multiplexeur Herdr. Un anneau pour les gouverner tous : il dispatche et supervise,
+il ne code pas.
 
 - **Le cycle d'un ouvrier** : ouvrir, briefer, surveiller, récolter, puis purger ou fermer.
 - **Onglet ou sous-agent** : un onglet quand le travail devra s'arrêter pour demander (plan,
@@ -47,8 +47,9 @@ pas.
   commité, un statut périmé, un auto-rapport pris pour une preuve, un prompt resté tapé sans partir, un
   ouvrier bloqué sur une question.
 
-Les ouvriers portent des noms du Seigneur des anneaux. Ces noms ne changent pas quand le sujet
-change, contrairement à un nom tiré de la tâche.
+Les ouvriers portent des noms du Seigneur des anneaux : les peuples d'abord (`elfes`, `nains`,
+`humains`), puis d'autres peuples ou des personnages s'il en faut plus. Ces noms ne changent pas
+quand le sujet change, contrairement à un nom tiré de la tâche.
 
 La skill suppose `HERDR_ENV=1` et s'appuie sur la skill `herdr` pour la syntaxe du CLI.
 

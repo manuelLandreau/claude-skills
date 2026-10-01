@@ -2,7 +2,7 @@
 
 > Bloc à citer **par son chemin** dans chaque brief d'ouvrier, jamais à recopier.
 > Une seule source, pas de dérive entre deux briefs.
-> Le maître le tient à jour ; un ouvrier ne l'édite pas.
+> L'anneau unique le tient à jour ; un ouvrier ne l'édite pas.
 
 ## Git et attribution
 
@@ -44,7 +44,7 @@
 ## Compte rendu
 
 - Tiens `/private/tmp/claude-501/acw-status/<ton-nom>.json` avec
-  `{tache, state, summary, updated_at}`. Le maître le lit ; c'est plus fiable que la sortie de ton
+  `{tache, state, summary, updated_at}`. L'anneau unique le lit ; c'est plus fiable que la sortie de ton
   terminal.
 - Rends : ce que tu as mesuré, le contrôle inverse, ce que tu n'as **pas** établi, l'état des
   gates, et la branche.
@@ -52,5 +52,5 @@
   n'est lisible que par qui connaît son chemin complet.
 - Si tu ouvres une PR, vérifie `gh pr view <n> --json isDraft` avant d'écrire « non draft » : une
   draft ne lance aucune CI.
-- En fin de lot, `wtm stop` sur ta stack (jamais `remove`), sauf si le maître t'a demandé de la
+- En fin de lot, `wtm stop` sur ta stack (jamais `remove`), sauf si l'anneau unique t'a demandé de la
   garder debout.
