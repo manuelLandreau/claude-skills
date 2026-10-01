@@ -79,6 +79,13 @@ avant (URL, comptes, flags, reset), la séquence avant / action / rechargement /
 base, et les pièges (cache client sur `goto`, snapshot qui lit le DOM et pas la mise en page,
 droits figés dans le token).
 
+### [`dailysum`](skills/dailysum/SKILL.md)
+
+Le daily prêt à coller dans Slack, une ligne par ticket : `✅ PROJ-123 - description courte :
+Merged`. Le statut (WIP, CR, Merged) vient des PRs du repo courant, les reviews faites et les
+commits sans ticket donnent quelques lignes en plus. Période par défaut : depuis le dernier jour
+ouvré. Écrite pour macOS (`date -v`, `pbcopy`).
+
 ## Les rules
 
 [`rules/`](rules) contient des règles courtes chargées par toutes les sessions, là où une skill
@@ -98,7 +105,7 @@ Les skills et les rules sont alors disponibles dans toutes les sessions Claude C
 Pour mettre la sauvegarde à jour depuis le poste, les versions locales étant déjà génériques :
 
 ```bash
-for s in full-implem anneau-unique commits-and-prs ci-parity runtime-proof; do
+for s in full-implem anneau-unique commits-and-prs ci-parity runtime-proof dailysum; do
   rsync -a --delete --exclude='*.local.md' --exclude='.DS_Store' ~/.claude/skills/$s/ skills/$s/
 done
 rsync -a --delete ~/.claude/rules/ rules/
