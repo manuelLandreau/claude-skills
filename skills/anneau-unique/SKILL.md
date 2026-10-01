@@ -18,9 +18,8 @@ Vérifie d'abord `test "${HERDR_ENV:-}" = 1`. Si ça échoue, dis-le et arrête.
 entre crochets** : 🟢 **[#123 export CSV]**, 🟡 **[#124 bandeau sticky]**, 🔴 **[base dev]**. La
 pastille dit l'état : 🟢 en cours ou livré, 🟡 bloqué ou en attente d'autre chose que
 l'utilisateur, 🔴 **une décision à prendre par l'utilisateur**, qui doit sauter aux yeux en
-parcourant le fil. Plusieurs chantiers se
-croisent dans le même fil ; sans étiquette, l'utilisateur ne sait pas à quel sujet se rapporte un
-paragraphe. Pas de code inline pour l'étiquette : il se confond avec les chemins et les commandes.
+parcourant le fil. Plusieurs chantiers se croisent dans le même fil ; sans étiquette,
+l'utilisateur ne sait pas à quel sujet se rapporte un paragraphe. Pas de code inline pour l'étiquette : il se confond avec les chemins et les commandes.
 Une réponse qui couvre deux sujets porte deux blocs étiquetés, jamais un mélange. Garde la même
 étiquette pour un sujet d'un message à l'autre.
 
