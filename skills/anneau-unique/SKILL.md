@@ -153,10 +153,10 @@ Après un `/clear`, l'identifiant de session de l'ouvrier **change**. Ne t'accro
 Enchaîne ensuite sur le prompt qui pointe le nouveau brief.
 
 Deux exceptions à cet accusé de réception. Une session qui n'a encore eu **aucun tour** n'a rien à
-purger : elle garde son identifiant, ne lui envoie pas de `/clear`. Son identifiant change d'ailleurs à
-son premier tour, sans `/clear` : ne relève celui d'une session neuve qu'après son premier prompt. Et le pane relu juste après
-peut encore afficher le rendu d'avant : ce qui fait foi, c'est le nouvel identifiant dans
-`herdr agent list`, pas l'écran.
+purger : elle garde son identifiant, ne lui envoie pas de `/clear`. Cet identifiant change
+d'ailleurs à son premier tour, sans `/clear` : ne relève celui d'une session neuve qu'après son
+premier prompt. Et le pane relu juste après peut encore afficher le rendu d'avant : ce qui fait
+foi, c'est le nouvel identifiant dans `herdr agent list`, pas l'écran.
 
 `/compact` quand le contexte compte encore pour la suite, `/clear` quand le sujet est clos.
 
