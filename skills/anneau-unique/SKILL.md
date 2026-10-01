@@ -14,6 +14,12 @@ ouvrier, et les pièges qui coûtent une demi-journée.
 
 Vérifie d'abord `test "${HERDR_ENV:-}" = 1`. Si ça échoue, dis-le et arrête.
 
+**Chaque sujet de tes réponses à l'utilisateur commence par son étiquette entre crochets** :
+`[#123 export CSV]`, `[#124 bandeau sticky]`, `[base dev]`. Plusieurs chantiers se croisent dans
+le même fil ; sans étiquette, l'utilisateur ne sait pas à quel sujet se rapporte un paragraphe.
+Une réponse qui couvre deux sujets porte deux blocs étiquetés, jamais un mélange. Garde la même
+étiquette pour un sujet d'un message à l'autre.
+
 ## Le cycle, et où tu es dedans
 
 ```
@@ -60,14 +66,17 @@ valeur calculée à l'exécution, il ne peut pas prouver que ce n'est pas `git`.
 Un onglet neuf est un shell, pas un agent. Deux temps :
 
 ```bash
-herdr tab create --cwd /chemin/du/worktree --label sujet-court --no-focus
-# relève le pane_id rendu, puis lance Claude dedans, avec son nom :
+herdr tab create --cwd /chemin/du/worktree --label gimli --no-focus
+# relève le pane_id rendu, puis lance Claude dedans, avec le même nom :
 herdr agent start gimli --kind claude --pane w1:pXX
 ```
 
+**L'onglet porte le nom de l'ouvrier, jamais celui du sujet** : `--label gimli`, pas `--label abc-123`.
+Le sujet change à chaque `/clear`, le nom reste. Ton propre onglet s'appelle `anneau-unique`. Un
+onglet mal nommé se corrige par `herdr tab rename <TAB_ID> <NOM>`.
+
 `agent start` prend le nom en premier argument, donc pas de `rename` derrière. Pour rebaptiser un
-ouvrier déjà lancé : `herdr agent rename <PANE> <NOM>`. Nomme-les toujours : le libellé
-automatique de l'onglet ne se règle pas et il finit par mentir.
+ouvrier déjà lancé : `herdr agent rename <PANE> <NOM>`.
 
 **La convention de nommage : Le Seigneur des anneaux.** Le maître est « L'anneau unique ». Chaque
 ouvrier porte un nom de personnage, un seul, tenu pour toute sa vie : `aragorn`, `boromir`,
