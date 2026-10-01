@@ -20,6 +20,9 @@ le même fil ; sans étiquette, l'utilisateur ne sait pas à quel sujet se rappo
 Une réponse qui couvre deux sujets porte deux blocs étiquetés, jamais un mélange. Garde la même
 étiquette pour un sujet d'un message à l'autre.
 
+**Une décision à demander à l'utilisateur passe par `AskUserQuestion`**, une question par décision,
+ta recommandation en tête. Une question glissée dans un point d'étape reste sans réponse.
+
 ## Le cycle, et où tu es dedans
 
 ```
@@ -147,6 +150,11 @@ herdr agent prompt w1:p1Y "/clear"
 Après un `/clear`, l'identifiant de session de l'ouvrier **change**. Ne t'accroche pas à l'ancien.
 Enchaîne ensuite sur le prompt qui pointe le nouveau brief.
 
+Deux exceptions à cet accusé de réception. Une session qui n'a encore eu **aucun tour** n'a rien à
+purger : elle garde son identifiant, ne lui envoie pas de `/clear`. Et le pane relu juste après
+peut encore afficher le rendu d'avant : ce qui fait foi, c'est le nouvel identifiant dans
+`herdr agent list`, pas l'écran.
+
 `/compact` quand le contexte compte encore pour la suite, `/clear` quand le sujet est clos.
 
 **Une commande slash ne s'envoie qu'à un ouvrier inactif.** Envoyée pendant qu'il travaille, elle
@@ -198,8 +206,8 @@ Le signal : `herdr agent prompt` rend `agent_blocked … requires interactive in
    `herdr pane send-keys <pane> Enter` pour l'option en tête (souvent « (Recommandé) »), les
    flèches avant sinon. Pour une validation de plan, lis le fichier de plan d'abord : il est
    dans `~/.claude/plans/<nom>.md`, affiché sous le menu.
-3. Si elle ne découle de rien de tranché, **pose-la à l'utilisateur**, avec le contexte et ta
-   recommandation. Ne choisis pas à sa place une règle métier.
+3. Si elle ne découle de rien de tranché, **pose-la à l'utilisateur** par `AskUserQuestion`,
+   avec le contexte et ta recommandation. Ne choisis pas à sa place une règle métier.
 4. Relis le pane : la validation d'un plan peut purger le contexte de l'ouvrier (`ctx` retombe),
    et une précision que tu voulais ajouter doit alors partir en prompt séparé.
 
@@ -215,7 +223,7 @@ mets-le en tête du prompt : `[QUESTION EN FILE, ne coupe pas ton sujet en cours
 ## 6. Récolter
 
 Chaque ouvrier tient `/private/tmp/claude-501/acw-status/<nom>.json` avec
-`{tache, state, summary, updated_at}`. **Lis-le avant de conclure quoi que ce soit sur lui** : le
+`{tache, state, summary, fichiers, updated_at}`. **Lis-le avant de conclure quoi que ce soit sur lui** : le
 titre de l'onglet et l'état `agent_status` peuvent être périmés.
 
 **Mais regarde `updated_at` avant de croire le reste.** Un ouvrier qui oublie de réécrire son
@@ -223,6 +231,14 @@ statut te sert un compte rendu d'un chantier fini la veille, avec l'assurance d'
 la main. C'est arrivé : un statut daté de la veille parlait encore d'une PR pendant que l'ouvrier
 venait de livrer autre chose. Si la date ne colle pas au sujet en cours, **le fichier ne vaut
 rien**, lis le pane.
+
+**Deux sujets qui touchent le même fichier, le même catalogue i18n ou la même chaîne de migrations
+ne tournent pas en parallèle.** Le recouvrement se devine mal avant de coder : l'ouvrier liste dans
+`fichiers` ce qu'il va créer ou modifier avant d'écrire du code, et tu compares avec les autres
+ouvriers actifs dès son premier avis d'inactivité. Un recouvrement, et l'un des deux attend.
+
+Pour lire l'arbre d'un ouvrier, **`git -C <worktree> --no-optional-locks status`**. Un `git status`
+nu pose `index.lock` et peut faire échouer le `git add` que l'ouvrier lance au même moment.
 
 ## 7. Fermer, purger, ou laisser tranquille
 
@@ -301,5 +317,6 @@ correctif part trop large.
 6. Brief écrit dans un fichier, chaîne de travail dite, prompt d'une ligne qui le pointe.
 7. Pane relu : ordre parti ou en file, pas resté au `❯`, pas d'écran bloqué.
 8. Abonné à son inactivité sous son nom `ListAgents` du moment.
-9. Statut récolté et vérifié contre un signal objectif avant toute conclusion.
+9. Statut récolté, `fichiers` comparé aux autres ouvriers, vérifié contre un signal objectif
+   avant toute conclusion.
 10. Onglets fermés et stacks arrêtées seulement si le travail est en sécurité, et dit où.

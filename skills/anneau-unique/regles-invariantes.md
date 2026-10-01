@@ -40,12 +40,17 @@
 - La machine est souvent chargée. **Préfère un conteneur éphémère sur le Postgres existant à une
   stack de plus**, et regarde le swap avant d'en monter une.
 - Un défaut applicatif ordinaire se reproduit sur n'importe quelle stack déjà debout.
+- **Jamais de `rm -rf` dans ton worktree** : tes fichiers temporaires vont dans ton scratchpad,
+  hors du repo. Une suppression récursive ouvre une demande d'approbation qui, sans réponse, se
+  refuse seule au bout de quelques minutes, sans que tu saches pourquoi.
 
 ## Compte rendu
 
 - Tiens `/private/tmp/claude-501/acw-status/<ton-nom>.json` avec
-  `{tache, state, summary, updated_at}`. L'anneau unique le lit ; c'est plus fiable que la sortie de ton
-  terminal.
+  `{tache, state, summary, fichiers, updated_at}`. L'anneau unique le lit ; c'est plus fiable que
+  la sortie de ton terminal.
+- **Avant d'écrire du code**, remplis `fichiers` avec ce que tu vas créer ou modifier, et tiens-le
+  à jour. L'anneau unique s'en sert pour qu'aucun autre ouvrier ne touche les mêmes en parallèle.
 - Rends : ce que tu as mesuré, le contrôle inverse, ce que tu n'as **pas** établi, l'état des
   gates, et la branche.
 - **Chemins absolus** pour tout fichier cité (corps de PR, inventaire, scripts). Ton scratchpad
