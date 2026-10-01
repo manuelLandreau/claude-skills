@@ -14,9 +14,11 @@ ouvrier, et les pièges qui coûtent une demi-journée.
 
 Vérifie d'abord `test "${HERDR_ENV:-}" = 1`. Si ça échoue, dis-le et arrête.
 
-**Chaque sujet de tes réponses à l'utilisateur commence par son étiquette entre crochets** :
-`[#123 export CSV]`, `[#124 bandeau sticky]`, `[base dev]`. Plusieurs chantiers se croisent dans
-le même fil ; sans étiquette, l'utilisateur ne sait pas à quel sujet se rapporte un paragraphe.
+**Chaque sujet de tes réponses à l'utilisateur commence par une pastille et son étiquette en gras
+entre crochets** : 🟢 **[#123 export CSV]**, 🟡 **[#124 bandeau sticky]**, 🔴 **[base dev]**. La
+pastille dit l'état : 🟢 en cours, 🟡 attend l'utilisateur, 🔴 bloqué. Plusieurs chantiers se
+croisent dans le même fil ; sans étiquette, l'utilisateur ne sait pas à quel sujet se rapporte un
+paragraphe. Pas de code inline pour l'étiquette : il se confond avec les chemins et les commandes.
 Une réponse qui couvre deux sujets porte deux blocs étiquetés, jamais un mélange. Garde la même
 étiquette pour un sujet d'un message à l'autre.
 
@@ -151,7 +153,8 @@ Après un `/clear`, l'identifiant de session de l'ouvrier **change**. Ne t'accro
 Enchaîne ensuite sur le prompt qui pointe le nouveau brief.
 
 Deux exceptions à cet accusé de réception. Une session qui n'a encore eu **aucun tour** n'a rien à
-purger : elle garde son identifiant, ne lui envoie pas de `/clear`. Et le pane relu juste après
+purger : elle garde son identifiant, ne lui envoie pas de `/clear`. Son identifiant change d'ailleurs à
+son premier tour, sans `/clear` : ne relève celui d'une session neuve qu'après son premier prompt. Et le pane relu juste après
 peut encore afficher le rendu d'avant : ce qui fait foi, c'est le nouvel identifiant dans
 `herdr agent list`, pas l'écran.
 
@@ -195,9 +198,12 @@ précédent ne dit rien de neuf : ne te réabonne pas en boucle, relis le pane a
 
 ## 5 bis. Un ouvrier bloqué sur une question
 
-Un ouvrier peut s'arrêter sur un écran qui attend une touche, et **rien ne te prévient** :
-validation de plan (« Would you like to proceed? »), question à choix (`AskUserQuestion`),
-confirmation de `/effort`, menu de limite atteinte (`/rate-limit-options`).
+Un ouvrier peut s'arrêter sur un écran qui attend une touche : validation de plan (« Would you
+like to proceed? »), question à choix (`AskUserQuestion`), confirmation de `/effort`, menu de
+limite atteinte (`/rate-limit-options`). **L'abonnement `notify_when_idle` ne se déclenche pas
+sur un écran bloqué** : mesuré le 01/10, 2 min 30 sur un `AskUserQuestion` sans avis, puis l'avis
+dès la réponse donnée et le tour fini. Un ouvrier silencieux plus longtemps que prévu se lit donc
+dans `herdr agent list` (`agent_status: blocked`) ou `ListAgents` (`waiting`).
 
 Le signal : `herdr agent prompt` rend `agent_blocked … requires interactive input`. Dans ce cas :
 
