@@ -85,6 +85,6 @@ Sujet conventionnel qui dit ce qui est corrigé (`fix: reject an empty catchment
 
 ## Avant de proposer la PR
 
-1. Rejouer les gates CI sur le dernier commit, scopées au diff : skill `ci-parity` (ou celle du repo).
+1. Rejouer les garde-fous CI sur le dernier commit, ciblés sur le diff : skill `ci-parity` (ou celle du repo).
 2. `git log --oneline <base>..HEAD` : aucun commit n'en corrige un autre, chacun est atomique. Sinon résorber (fixup + autosquash) **avant** de créer la PR.
 3. Branche rebasée sur la base à jour (`git fetch` puis `git rebase origin/<base>`).

@@ -86,11 +86,11 @@ adapte-toi.
   t'arrêtes après les commits et tu l'annonces maintenant, pas à la fin.
 - **Tracker** : `acli jira` s'il est installé et authentifié, sinon le MCP Atlassian, sinon la
   clé de ticket n'est qu'une étiquette et le plan se construit sur le seul contexte libre.
-- **Skills du repo** dans `.claude/skills/` : repère celles qui couvrent les gates CI, les
+- **Skills du repo** dans `.claude/skills/` : repère celles qui couvrent les garde-fous CI, les
   conventions de commit et de PR, le pilotage du navigateur, la relecture par stack. Les noms
   varient d'un projet à l'autre (`ci-checks`, `pr-and-commits`, `testing-locally-with-*`,
   `*-code-reviewer`), lis les `description:` plutôt que de chercher un nom exact.
-  **Utilise-les, ne les réimplémente pas** : elles portent les comptes seedés, les gates maison
+  **Utilise-les, ne les réimplémente pas** : elles portent les comptes seedés, les garde-fous maison
   et les conventions de PR que tu ignores.
 - **Commandes de test et de lint** : CLAUDE.md, puis README, puis `package.json` / `Makefile` /
   `composer.json` / `pyproject.toml`.
@@ -177,10 +177,10 @@ la corrige sans que personne ait à lire une liste.
 - Ce qu'elle a changé part en commits `git commit --fixup=<sha>`, un par tranche touchée : ils
   restent lisibles à part jusqu'à la phase 7, qui les fond dans leur tranche.
 
-## Phase 4. Gates mécaniques
+## Phase 4. Garde-fous mécaniques
 
-La skill de gates CI du repo si elle existe, sinon la skill `ci-parity`. Rouge, tu répares. Ne
-rapporte pas un gate rouge comme un résultat.
+La skill de garde-fous CI du repo si elle existe, sinon la skill `ci-parity`. Rouge, tu répares. Ne
+rapporte pas un garde-fou rouge comme un résultat.
 
 ## Phase 5. Preuve runtime
 
@@ -228,7 +228,7 @@ confirmation à redemander, contrairement au défaut de `commits-and-prs`.
 
 Fonds d'abord les fixup des phases 3 et 6 dans leur tranche :
 `GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash <base>`. L'arbre final ne change pas, donc les
-gates de la phase 4 restent valides ; `git log --oneline <base>..HEAD` ne doit plus montrer que
+garde-fous de la phase 4 restent valides ; `git log --oneline <base>..HEAD` ne doit plus montrer que
 les tranches.
 Exception, le mode reprise sur une PR déjà relue par un humain : pas de fixup ni de réécriture,
 des commits correctifs par-dessus (`commits-and-prs`, « Retours de review »).
@@ -250,7 +250,7 @@ et tu affiches la commande prête.
 ## Checklist de sortie
 
 Avant d'avoir le droit de rendre la main, relis le plan gelé et vérifie ligne à ligne : chaque
-tranche livrée ou explicitement reportée, gates verts, preuve runtime produite pour le parcours
+tranche livrée ou explicitement reportée, garde-fous verts, preuve runtime produite pour le parcours
 que le plan nomme, passe qualité passée, review finale convergée, fixup fondus, PR ouverte. Une case non
 cochée n'est pas un point à signaler dans le rapport, c'est du travail à finir : reprends la
 phase concernée.
@@ -259,14 +259,14 @@ Cette checklist est de la discipline, pas une contrainte du harnais. Un `/goal` 
 avec la même condition est strictement plus fort, puisqu'il empêche réellement l'arrêt :
 
 ```
-/goal PR draft ouverte sur PROJ-1058, gates verts, preuve runtime capturée, scope du plan tenu
+/goal PR draft ouverte sur PROJ-1058, garde-fous verts, preuve runtime capturée, scope du plan tenu
 /full-implem PROJ-1058
 ```
 
 ## Le rapport final
 
 Dix lignes maximum : cible et branche (et le worktree s'il y en a un), les tranches livrées une
-ligne chacune, ce que la passe qualité a changé en une ligne, gates vert ou rouge, la preuve
+ligne chacune, ce que la passe qualité a changé en une ligne, garde-fous vert ou rouge, la preuve
 runtime et où sont les captures, la review sous la forme `N trouvés / M corrigés / K reportés`
 (zéro trouvé est une valeur normale), le nombre de sorties de scope révoquées, le chemin du plan
 gelé, l'URL de la PR.

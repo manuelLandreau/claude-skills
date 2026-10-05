@@ -17,7 +17,7 @@ Chercher dans la skill du repo, puis CLAUDE.md, README, seeds, `docker-compose`,
 | Routing particulier (sous-domaine, slug en préfixe de route) | routeur du front |
 | Page de login par persona (admin, utilisateur final…) | routeur, guards |
 | Comptes seedés et comment obtenir un mot de passe | scripts de seed, fixtures |
-| Gating : feature flags, modules, rôles | modèle/table des flags, guards |
+| Accès conditionnel : feature flags, modules, rôles | modèle/table des flags, guards |
 | Remettre un état connu | commande de seed/reset, dump |
 | Logs de l'API | `docker compose logs <service> --since 3m` |
 
@@ -50,7 +50,7 @@ Une capture n'est pas une preuve, le parcours l'est. Souvent plus fort qu'une ca
 
 **Droits portés par le token.** Rôles et permissions souvent figés dans le JWT ou mis en cache pour sa durée : après un changement de droit, se déconnecter et se reconnecter, sinon l'écran reste masqué sans erreur.
 
-**Écran masqué ou 403 sans raison apparente** : chercher un gating cumulatif (flag global + activation par organisation/tenant + rôle) avant de conclure à un bug.
+**Écran masqué ou 403 sans raison apparente** : chercher un accès conditionnel cumulatif (flag global + activation par organisation/tenant + rôle) avant de conclure à un bug.
 
 ## Jamais
 

@@ -52,7 +52,7 @@
 - **Avant d'écrire du code**, remplis `fichiers` avec ce que tu vas créer ou modifier, et tiens-le
   à jour. L'anneau unique s'en sert pour qu'aucun autre ouvrier ne touche les mêmes en parallèle.
 - Rends : ce que tu as mesuré, le contrôle inverse, ce que tu n'as **pas** établi, l'état des
-  gates, et la branche.
+  garde-fous, et la branche.
 - **Chemins absolus** pour tout fichier cité (corps de PR, inventaire, scripts). Ton scratchpad
   n'est lisible que par qui connaît son chemin complet.
 - Si tu ouvres une PR, vérifie `gh pr view <n> --json isDraft` avant d'écrire « non draft » : une

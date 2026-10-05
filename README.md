@@ -21,7 +21,7 @@ suit le niveau d'effort demandé plutôt que le code, et un scope qui déborde d
 - **Deux relectures** : `/simplify` applique les corrections de qualité, puis une
   `/code-review high` sur la branche rapporte les problèmes de correctness. Les passes sur le
   diff des fix redescendent en `medium` pour que la boucle converge.
-- **Livraison** : gates CI (`ci-parity`), preuve runtime (`runtime-proof`), fixup fondus par
+- **Livraison** : garde-fous CI (`ci-parity`), preuve runtime (`runtime-proof`), fixup fondus par
   autosquash, commits atomiques, PR en draft.
 
 Une branche propre qui ressort zéro finding est un run réussi.
@@ -69,9 +69,9 @@ Le défaut pour committer, rebaser et ouvrir une PR quand le repo ne fixe pas se
 
 ### [`ci-parity`](skills/ci-parity/SKILL.md)
 
-Rejoue en local les gates CI qui décident du merge, lues dans les workflows du repo : filtres de
+Rejoue en local les garde-fous CI qui décident du merge, lues dans les workflows du repo : filtres de
 chemins scopés au diff, et les pièges où le local reste vert pendant que la CI passe au rouge
-(lockfile périmé, deps de dev, gates hors suite de tests, worktree sans stack).
+(lockfile périmé, deps de dev, garde-fous hors suite de tests, worktree sans stack).
 
 ### [`runtime-proof`](skills/runtime-proof/SKILL.md)
 

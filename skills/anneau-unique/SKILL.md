@@ -304,7 +304,7 @@ onglet, et `/clear` entre les deux.
 ouvrier se souvient comme un arbitrage si tu la ranges mal. Garde le verbe : mesuré, ou déduit.
 
 **Valide contre un signal objectif avant de relayer.** Un auto-rapport n'est pas une preuve : va
-lire `git log`, l'état de la PR (`mergedAt`, pas « open »), la sortie des gates, le fichier. Relayer
+lire `git log`, l'état de la PR (`mergedAt`, pas « open »), la sortie des garde-fous, le fichier. Relayer
 « c'est corrigé » sur la foi d'un compte rendu est la façon la plus rapide de faire prendre une
 décision sur du faux. Exemple : une PR annoncée « non draft, CI verte » était en draft, donc sans
 aucune CI. Après toute ouverture de PR, lance toi-même
