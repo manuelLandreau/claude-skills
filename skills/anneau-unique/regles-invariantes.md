@@ -25,9 +25,11 @@
   n'inventes pas une règle métier ; livrer une règle inventée fabrique un défaut de plus.
 - **Hors périmètre nommément** dans le corps de la PR : un correctif partiel qui ne nomme pas ses
   chemins frères devient invisible au statut du ticket.
-- **`/code-review medium`, jamais `high` ni au-dessus**, et toujours avec le niveau écrit
-  explicitement (il est collant). Le nombre de findings suit le niveau choisi, pas le code. Le
-  30/09, deux ouvriers sur deux sont partis en `high` sur des diffs de quelques lignes.
+- **Niveau de `/code-review`, toujours écrit explicitement** (il est collant) : `medium` sur le
+  diff d'une tranche ou des commits de fix, **`high` pour la review finale**, une seule fois, sur
+  la branche entière avant de rendre la main. Jamais `xhigh` ni `max`. Le nombre de findings suit
+  le niveau choisi, pas le code : le 30/09, deux ouvriers sur deux sont partis en `high` sur des
+  diffs de tranche de quelques lignes.
 
 ## Preuve
 
