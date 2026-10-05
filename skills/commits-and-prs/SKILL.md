@@ -1,6 +1,6 @@
 ---
 name: commits-and-prs
-description: Use when committing on a branch, rebasing it, opening or editing a pull request, answering review feedback, or checking a branch before merge. Covers atomic commits kept clean by local rebase (whatever the remote merge strategy), non-interactive fixup/autosquash, the "En bref" / "Détails techniques" PR body whose "En bref" a human writes, per-PR screenshot folders, and review fix-ups without force-push.
+description: Use when committing on a branch, rebasing it, opening or editing a pull request, answering review feedback, or checking a branch before merge. Covers atomic commits kept clean by local rebase (whatever the remote merge strategy), non-interactive fixup/autosquash, the PR body ("Ce que change cette PR pour l'utilisateur" / "Comment tester" / "TL;DR", top two kept verbatim on later edits), per-PR screenshot folders, and review fix-ups without force-push.
 ---
 
 # Commits et pull requests
@@ -34,7 +34,7 @@ GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash <base>
 
 **Message en anglais, conventional commits.** Sujet à l'impératif, `feat:` / `fix:` / `chore:` / `docs:` / `refactor:` / `test:`, scope optionnel si le repo en utilise (`git log --oneline -20` pour le voir).
 
-**Corps court.** Un paragraphe, deux au plus, 150 mots plafond, rien quand le diff parle seul. Au-delà : soit le commit n'est pas atomique, soit c'est du contenu de « Détails techniques ».
+**Corps court.** Un paragraphe, deux au plus, 150 mots plafond, rien quand le diff parle seul. Au-delà : soit le commit n'est pas atomique, soit c’est du contenu de « TL;DR ».
 
 **Une raison par commit, pas une par ligne.** À écrire : la contrainte non devinable, le piège qu'un lecteur défera par mégarde, l'alternative évidente qui ne marche pas. À ne pas écrire : le diff raconté fichier par fichier, les tests expliqués, ce que le code dit déjà.
 
@@ -48,40 +48,58 @@ Suivre la forme des PR mergées récemment (`gh pr list --state merged -L 10 --j
 
 ### Corps
 
-Deux sections, dans cet ordre, rien d'autre.
+Trois sections, dans cet ordre, rien d'autre.
 
-`## En bref` décrit la PR. Obligatoire, concise, **écrite par un humain**. À la création, l'agent publie le titre de section et laisse le contenu vide ; l'auteur le rédige en éditant la PR.
+`## Ce que change cette PR pour l'utilisateur` : deux à quatre lignes, sans jargon, du point de vue de qui utilise l'écran ou l'API. Pas de nom de fichier, de classe ni de migration.
 
-**Toute édition ultérieure repart du corps publié** (`gh pr view <n> --json body`) et recopie « En bref » et les captures verbatim, section vide comprise : GitHub remplace le champ entier à chaque écriture, republier le gabarit efface ce que l'auteur y a mis.
+`## Comment tester` : le parcours le plus court pour voir le changement, à suivre sans connaître le code. URL directe, compte à utiliser, puis trois à cinq étapes et le résultat attendu. Une donnée à créer avant passe par une commande prête à coller, pas par « crée-toi un enregistrement ».
 
-`## Détails techniques` est facultative et libre : fonctionnement fin, points d'attention pour le relecteur, hors-périmètre, choix écartés, vérification faite, liens ticket/maquette. L'agent peut la rédiger.
+L'agent **rédige ces deux sections à la création**, puis l'auteur les reprend à sa main. **Toute édition ultérieure repart du corps publié** (`gh pr view <n> --json body`) et recopie ces deux sections et les captures verbatim : GitHub remplace le champ entier à chaque écriture, et republier le gabarit effacerait ce que l'auteur y a corrigé.
 
-**PR qui touche le front → sous-section `### Captures`** dans « Détails techniques » : avant / après pour un écran modifié, capture simple pour un écran nouveau.
+`## TL;DR` : technique et libre (fonctionnement fin, points d'attention pour le relecteur, hors-périmètre, choix écartés, vérification faite, liens ticket/maquette). L'agent la rédige et la met à jour. Retirée si elle n'a rien à dire.
 
-Un agent ne peut pas téléverser d'image sur GitHub. Il produit les captures pendant sa preuve runtime (skill `runtime-proof`), les range dans **un dossier par PR** — le nom de branche privé de son préfixe : `~/Desktop/ABC-123-some-feature/` pour `feat/ABC-123-some-feature` — nommées `<clé>-avant.png` / `<clé>-apres.png`, et laisse un emplacement commenté par capture. L'auteur glisse les images au même passage que « En bref ». Jamais en vrac sur le Bureau : un ticket peut livrer plusieurs PR.
+**PR qui touche le front → sous-section `### Captures`** dans « Ce que change cette PR pour l'utilisateur » : avant / après pour un écran modifié, capture simple pour un écran nouveau.
+
+L'agent produit les captures pendant sa preuve runtime (skill `runtime-proof`), les range dans **un dossier par PR** — le nom de branche privé de son préfixe : `~/Desktop/ABC-123-some-feature/` pour `feat/ABC-123-some-feature` — nommées `<clé>-avant.png` / `<clé>-apres.png`. Jamais en vrac sur le Bureau : un ticket peut livrer plusieurs PR.
+
+**L'agent insère lui-même les captures dans la PR** avec `gh` ≥ 2.101 : le corps référence chaque fichier local par `![légende](<chemin>)`, et `gh pr create|edit --body-file <corps.md> --attach '<chemin>#<légende>'` téléverse l'image et réécrit la référence vers `https://github.com/user-attachments/assets/…` (la même chaîne de chemin des deux côtés, 50 fichiers au plus par commande). Relire ensuite le corps publié : plus aucun chemin local ne doit y rester. Pas de navigateur ni de session GitHub à récupérer : le mode auto refuse d'écrire des cookies de session sur disque. Sur une `gh` plus ancienne (`gh help pr edit` sans `--attach`), laisser un emplacement commenté par capture et le dire.
 
 **Chaque capture est relue (`Read`) avant d'être annoncée** : un snapshot d'accessibilité lit le DOM, pas la mise en page, donc débordements et superpositions passent le snapshot.
 
 Corps à la création :
 
 ```markdown
-## En bref
+## Ce que change cette PR pour l'utilisateur
 
-## Détails techniques
-
-<contenu, ou section retirée si elle n'a rien à dire>
+<deux à quatre lignes>
 
 ### Captures
 
-<!-- ABC-123-avant.png -->
-<!-- ABC-123-apres.png -->
+![Avant](/Users/…/Desktop/ABC-123-some-feature/ABC-123-avant.png)
+![Après](/Users/…/Desktop/ABC-123-some-feature/ABC-123-apres.png)
+
+## Comment tester
+
+<URL, compte, étapes, résultat attendu>
+
+## TL;DR
+
+<contenu technique, ou section retirée>
 ```
+
+(chemins réécrits en URL `user-attachments` par `--attach`)
 
 ### Retours de review
 
 Une fois la PR relue, chaque correction est un **commit correctif par-dessus**, sans amend, sans rebase, **sans force-push** : le relecteur doit pouvoir lire le diff de ce qu'il a demandé sans relire la branche. Seule dérogation à l'atomicité, assumée.
 
 Sujet conventionnel qui dit ce qui est corrigé (`fix: reject an empty catchment area`), jamais « review feedback ».
+
+**Aucune réponse sur le thread** d'un retour corrigé : le commit correctif répond. Résoudre le thread sans commenter, sauf demande contraire.
+
+### Review postée au nom de l'utilisateur
+
+Une review GitHub (pending puis soumise), un commentaire par point, **ancré sur sa ligne**. Première personne, une ou deux phrases, sans titre, gras ni liste : ça doit se lire comme écrit par l'utilisateur. Ne garder que ce qui touche la conformité au ticket ou un vrai défaut, pas les préférences.
 
 ## Avant de proposer la PR
 
