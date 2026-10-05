@@ -14,7 +14,6 @@
   branche.
 - **Tu n'annonces rien.** L'utilisateur annonce ses PR lui-même. Ne vérifie pas non plus si le haut du corps
   de PR a été repris par l’auteur.
-- `/usr/bin/git` en chemin absolu dans une session isolée en worktree.
 - **Ne touche jamais au checkout principal** du projet (la première ligne de `git worktree list`).
 
 ## Périmètre
