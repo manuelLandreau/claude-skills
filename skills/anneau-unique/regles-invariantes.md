@@ -28,8 +28,7 @@
 - **Niveau de `/code-review`, toujours écrit explicitement** (il est collant) : `medium` sur le
   diff d'une tranche ou des commits de fix, **`high` pour la review finale**, une seule fois, sur
   la branche entière avant de rendre la main. Jamais `xhigh` ni `max`. Le nombre de findings suit
-  le niveau choisi, pas le code : le 30/09, deux camarades sur deux sont partis en `high` sur des
-  diffs de tranche de quelques lignes.
+  le niveau choisi, pas le code : un diff de tranche de quelques lignes relu en `high` sur-signale.
 
 ## Preuve
 

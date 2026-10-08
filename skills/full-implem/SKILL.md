@@ -79,7 +79,7 @@ corps de la PR et le diff, fais-le approuver, puis saute la phase 2 s'il ne rest
 
 ## Phase 0. Reconnaissance
 
-Une passe, silencieuse, en parallèle. N'installe jamais rien : si un outil manque, dis-le et
+Une passe, en parallèle. N'installe jamais rien : si un outil manque, dis-le et
 adapte-toi.
 
 - **Forge** : `gh` si le remote est GitHub, `glab` si GitLab. Aucune des deux, pas de PR : tu
@@ -265,7 +265,7 @@ avec la même condition est strictement plus fort, puisqu'il empêche réellemen
 
 ## Le rapport final
 
-Dix lignes maximum : cible et branche (et le worktree s'il y en a un), les tranches livrées une
+Compact, une ligne par élément : cible et branche (et le worktree s'il y en a un), les tranches livrées une
 ligne chacune, ce que la passe qualité a changé en une ligne, garde-fous vert ou rouge, la preuve
 runtime et où sont les captures, la review sous la forme `N trouvés / M corrigés / K reportés`
 (zéro trouvé est une valeur normale), le nombre de sorties de scope révoquées, le chemin du plan

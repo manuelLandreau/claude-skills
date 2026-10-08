@@ -254,8 +254,7 @@ titre du pane et l'état `agent_status` peuvent être périmés.
 
 **Mais regarde `updated_at` avant de croire le reste.** Un camarade qui oublie de réécrire son
 statut te sert un compte rendu d'un chantier fini la veille, avec l'assurance d'un fichier écrit à
-la main. C'est arrivé : un statut daté de la veille parlait encore d'une PR pendant que le camarade
-venait de livrer autre chose. Si la date ne colle pas au sujet en cours, **le fichier ne vaut
+la main. Si la date ne colle pas au sujet en cours, **le fichier ne vaut
 rien**, lis le pane.
 
 **Deux sujets qui touchent le même fichier, le même catalogue i18n ou la même chaîne de migrations
@@ -285,7 +284,7 @@ autres camarades de la colonne.
 ## Les pièges qui coûtent cher
 
 **Le titre d'un pane ment.** Herdr titre les panes tout seul d'après la session, et rien ne remplace un nom
-manuel. J'ai pris mon propre pane pour une autre session pendant des heures à cause de ça.
+manuel.
 **Identifie une session par son UUID** (`agent_session.value` dans `herdr agent list`), jamais par
 le titre.
 
@@ -293,7 +292,7 @@ le titre.
 de saisie du camarade, et quand le camarade est occupé au moment de l'envoi, **le texte y reste sans
 être soumis**. Le pane affiche alors un `❯ mon ordre` que personne ne lit, le camarade reste inactif,
 et `agent_status` dit `idle` — ce qui se lit « il a fini » et non « il attend un ordre qui n'est
-jamais arrivé ». Ça m'a coûté quatre heures sur un camarade prêt à pousser deux branches.
+jamais arrivé ».
 **Relis le pane après chaque brief** : si ton ordre apparaît au niveau du `❯` au lieu de défiler
 dans l'historique, il n'est pas parti. `send-keys <pane> Enter` ne le rattrape pas toujours ;
 renvoie le prompt.
