@@ -189,7 +189,7 @@ une preuve runtime, et sans preuve la tâche n'est pas finie.
 
 La skill de pilotage navigateur du repo si elle existe, sinon la skill `runtime-proof`. Joue le
 parcours écrit dans le plan, pas un autre. Captures dans le dossier de la PR que décrit
-`commits-and-prs`, jamais dans le repo.
+`commits-and-prs`, jamais dans le repo ni sur le Bureau : elles finissent dans le corps de la PR.
 
 ## Phase 6. Review finale
 

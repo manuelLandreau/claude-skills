@@ -44,7 +44,7 @@ Une capture n'est pas une preuve, le parcours l'est. Souvent plus fort qu'une ca
 
 **Un snapshot d'accessibilité lit le DOM, pas la mise en page.** Débordement, texte cassé mot à mot, éléments superposés, panneau qui recouvre l'écran : tout passe le snapshot. **Relire chaque capture (`Read`) avant de l'annoncer.**
 
-**Les captures du MCP Playwright ne vont pas où on les demande.** Un nom relatif s'écrit dans le cwd, donc à la racine du repo ; un chemin absolu hors de `~/.cache/playwright-mcp/out` (son `--output-dir`) est refusé. Donne un chemin absolu sous ce dossier, puis `mv` vers le dossier de la PR — `~/Desktop/<branche sans préfixe feat/|fix/>/<clé>-<id>-avant.png` — et vérifie que `git status` ne montre aucun PNG.
+**Les captures du MCP Playwright ne vont pas où on les demande.** Un nom relatif s'écrit dans le cwd, donc à la racine du repo ; un chemin absolu hors de `~/.cache/playwright-mcp/out` (son `--output-dir`) est refusé. Donne un chemin absolu sous ce dossier, dans un sous-dossier par PR — `~/.cache/playwright-mcp/out/<branche sans préfixe feat/|fix/>/<clé>-<id>-avant.png` — et laisse-la là : jamais de copie sur le Bureau, la capture finit dans le corps de la PR (skill `commits-and-prs`). Vérifie que `git status` ne montre aucun PNG.
 
 **Headless par défaut.** Une fenêtre visible vole le focus de l'utilisateur, et il peut y toucher. Si on te demande un navigateur visible, une donnée qui change sans action de ta part n'est pas forcément un bug : demander avant de conclure, puis rejouer depuis un état remis à plat pour que la preuve soit attribuable.
 

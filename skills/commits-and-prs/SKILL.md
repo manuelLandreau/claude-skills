@@ -60,7 +60,7 @@ L'agent **rédige ces deux sections à la création**, puis l'auteur les reprend
 
 **PR qui touche le front → sous-section `### Captures`** dans « Ce que change cette PR pour l'utilisateur » : avant / après pour un écran modifié, capture simple pour un écran nouveau.
 
-L'agent produit les captures pendant sa preuve runtime (skill `runtime-proof`), les range dans **un dossier par PR** — le nom de branche privé de son préfixe : `~/Desktop/ABC-123-some-feature/` pour `feat/ABC-123-some-feature` — nommées `<clé>-avant.png` / `<clé>-apres.png`. Jamais en vrac sur le Bureau : un ticket peut livrer plusieurs PR.
+L'agent produit les captures pendant sa preuve runtime (skill `runtime-proof`), les range dans **un dossier de travail par PR** sous la sortie du MCP Playwright — le nom de branche privé de son préfixe : `~/.cache/playwright-mcp/out/ABC-123-some-feature/` pour `feat/ABC-123-some-feature` — nommées `<clé>-avant.png` / `<clé>-apres.png`. **Rien sur le Bureau** : la seule destination d'une capture est le corps de la PR (ci-dessous), le dossier n'est qu'une étape.
 
 **L'agent insère lui-même les captures dans la PR** avec `gh` ≥ 2.101 : le corps référence chaque fichier local par `![légende](<chemin>)`, et `gh pr create|edit --body-file <corps.md> --attach '<chemin>#<légende>'` téléverse l'image et réécrit la référence vers `https://github.com/user-attachments/assets/…` (la même chaîne de chemin des deux côtés, 50 fichiers au plus par commande). Relire ensuite le corps publié : plus aucun chemin local ne doit y rester. Pas de navigateur ni de session GitHub à récupérer : le mode auto refuse d'écrire des cookies de session sur disque. Sur une `gh` plus ancienne (`gh help pr edit` sans `--attach`), laisser un emplacement commenté par capture et le dire.
 
@@ -75,8 +75,8 @@ Corps à la création :
 
 ### Captures
 
-![Avant](/Users/…/Desktop/ABC-123-some-feature/ABC-123-avant.png)
-![Après](/Users/…/Desktop/ABC-123-some-feature/ABC-123-apres.png)
+![Avant](/Users/…/.cache/playwright-mcp/out/ABC-123-some-feature/ABC-123-avant.png)
+![Après](/Users/…/.cache/playwright-mcp/out/ABC-123-some-feature/ABC-123-apres.png)
 
 ## Comment tester
 
