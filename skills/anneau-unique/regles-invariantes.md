@@ -1,8 +1,8 @@
 # Les règles qui ne changent pas
 
-> Bloc à citer **par son chemin** dans chaque brief d'ouvrier, jamais à recopier.
+> Bloc à citer **par son chemin** dans chaque brief de camarade, jamais à recopier.
 > Une seule source, pas de dérive entre deux briefs.
-> L'anneau unique le tient à jour ; un ouvrier ne l'édite pas.
+> L'anneau unique le tient à jour ; un camarade ne l'édite pas.
 
 ## Git et attribution
 
@@ -28,7 +28,7 @@
 - **Niveau de `/code-review`, toujours écrit explicitement** (il est collant) : `medium` sur le
   diff d'une tranche ou des commits de fix, **`high` pour la review finale**, une seule fois, sur
   la branche entière avant de rendre la main. Jamais `xhigh` ni `max`. Le nombre de findings suit
-  le niveau choisi, pas le code : le 30/09, deux ouvriers sur deux sont partis en `high` sur des
+  le niveau choisi, pas le code : le 30/09, deux camarades sur deux sont partis en `high` sur des
   diffs de tranche de quelques lignes.
 
 ## Preuve
@@ -51,7 +51,7 @@
   `{tache, state, summary, fichiers, updated_at}`. L'anneau unique le lit ; c'est plus fiable que
   la sortie de ton terminal.
 - **Avant d'écrire du code**, remplis `fichiers` avec ce que tu vas créer ou modifier, et tiens-le
-  à jour. L'anneau unique s'en sert pour qu'aucun autre ouvrier ne touche les mêmes en parallèle.
+  à jour. L'anneau unique s'en sert pour qu'aucun autre camarade ne touche les mêmes en parallèle.
 - Rends : ce que tu as mesuré, le contrôle inverse, ce que tu n'as **pas** établi, l'état des
   garde-fous, et la branche.
 - **Chemins absolus** pour tout fichier cité (corps de PR, inventaire, scripts). Ton scratchpad
