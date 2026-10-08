@@ -30,24 +30,25 @@ Usage : `/full-implem PROJ-123 garde le scope, front seulement`
 
 ### [`anneau-unique`](skills/anneau-unique/SKILL.md)
 
-Sert à piloter plusieurs sessions Claude « ouvrières » depuis une session « anneau unique », dans
-des onglets du multiplexeur Herdr. Un anneau pour les gouverner tous : il dispatche et supervise,
-il ne code pas.
+Sert à piloter plusieurs sessions Claude « camarades » depuis une session « anneau unique », dans
+le multiplexeur Herdr : l'anneau dans un pane à gauche, les camarades empilés à droite dans le même
+onglet. Un anneau pour les gouverner tous : il dispatche et supervise, il ne code pas.
 
-- **Le cycle d'un ouvrier** : ouvrir, briefer, surveiller, récolter, puis purger ou fermer.
-- **Onglet ou sous-agent** : un onglet quand le travail devra s'arrêter pour demander (plan,
+- **Le cycle d'un camarade** : ouvrir, briefer, surveiller, récolter, puis purger ou fermer.
+- **Pane ou sous-agent** : un pane quand le travail devra s'arrêter pour demander (plan,
   arbitrage, PR), un sous-agent pour une mesure ou une lecture qui rend un verdict.
 - **Les briefs** passent par un fichier, et les règles communes sont citées par leur chemin
   ([`regles-invariantes.md`](skills/anneau-unique/regles-invariantes.md)) au lieu d'être
   recopiées. Les exigences propres à un projet vont dans un `projets.local.md` à côté, jamais
   publié.
 - **La surveillance** se fait par abonnement (`SendMessage` avec `notify_when_idle`), pas par
-  sondage.
-- **Les pièges déjà rencontrés** : un libellé d'onglet qui ment, un ouvrier « done » qui n'a pas
+  sondage. Chaque camarade charge le mod `~/.claude/mods/camarade`, qui affiche son statut sous
+  son prompt.
+- **Les pièges déjà rencontrés** : un titre de pane qui ment, un camarade « done » qui n'a pas
   commité, un statut périmé, un auto-rapport pris pour une preuve, un prompt resté tapé sans partir, un
-  ouvrier bloqué sur une question.
+  camarade bloqué sur une question.
 
-Les ouvriers portent des noms du Seigneur des anneaux : les peuples d'abord (`elfes`, `nains`,
+Les camarades portent des noms du Seigneur des anneaux : les peuples d'abord (`elfes`, `nains`,
 `humains`), puis d'autres peuples ou des personnages s'il en faut plus. Ces noms ne changent pas
 quand le sujet change, contrairement à un nom tiré de la tâche.
 
