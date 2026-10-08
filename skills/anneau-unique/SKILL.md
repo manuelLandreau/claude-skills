@@ -99,6 +99,11 @@ alerte ; l'alerte, c'est `⚠ maj 45 min` sur un statut non fini, le camarade a 
 Ce que l'utilisateur lit là vient du fichier de statut : un camarade qui ne le tient pas à jour
 ment aussi dans le pane (§ 6).
 
+Le mod refuse aussi `git push` et `gh pr create|ready|merge` dans la session du camarade, et lui
+rappelle d'écrire son statut quand un tour se termine sur un statut absent ou vieux de 30 min. Un
+camarade dont le brief va jusqu'au push ou à la PR (un `/full-implem` de bout en bout) se lance
+avec une troisième variable, `--env ACW_PEUT_POUSSER=1` ; sans elle, son push est refusé.
+
 **Le pane porte le nom du camarade, jamais celui du sujet** : `nains`, pas `abc-123`. Le sujet
 change à chaque `/clear`, le nom reste. `agent start` prend le nom en premier argument, donc pas
 de `rename` derrière. Pour rebaptiser un camarade déjà lancé : `herdr agent rename <PANE> <NOM>`.
@@ -195,6 +200,13 @@ prouve, c'est là que l'effort paie. Descends en `medium` seulement si l'utilisa
 quota hebdo est serré : la limite bloque tous les camarades en même temps, `/compact` compris.
 
 ## 5. Surveiller : abonne-toi, ne sonde pas
+
+**Si ta session a chargé le mod `anneau`** (lancée avec
+`CLAUDE_CODE_PLUGIN_DIRS=$HOME/.claude/mods/anneau`), l'outil `camarades_etat` te rend l'état de
+tous les camarades en un appel : statut, âge, pane, UUID, et ce qui demande ton attention, y
+compris un écran bloqué (§ 5 bis). Prends-le au lieu de lire les fichiers et `herdr` un par un.
+L'utilisateur voit le même état dans un bandeau au-dessus de ton prompt et par des toasts ;
+`/camarades` ouvre le panneau détaillé. L'abonnement ci-dessous reste utile pour être réveillé.
 
 **Le bon outil est `SendMessage` avec `notify_when_idle: true` et sans message.** C'est un
 abonnement à usage unique, gratuit pour le camarade, qui te rend un avis quand il redevient inactif
