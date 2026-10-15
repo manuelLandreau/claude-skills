@@ -1,6 +1,6 @@
 ---
 name: anneau-unique
-description: "Piloter des sessions Claude camarades dans des panes Herdr depuis l'anneau unique, l'anneau à gauche et les camarades empilés à droite : ouvrir un pane, briefer, surveiller, récolter, puis purger (/clear, /compact) ou fermer, et choisir entre un pane et un sous-agent. À utiliser quand on dispatche du travail à d'autres sessions Herdr, qu'on supervise plusieurs chantiers en parallèle, ou qu'on fait le ménage des camarades entre deux sujets. Suppose HERDR_ENV=1."
+description: "Piloter des sessions Claude camarades dans des panes Herdr depuis l'anneau unique, l'anneau à gauche et les camarades empilés à droite : ouvrir un pane, briefer, surveiller, récolter, puis compacter ou fermer (un pane neuf par sujet), et choisir entre un pane et un sous-agent. À utiliser quand on dispatche du travail à d'autres sessions Herdr, qu'on supervise plusieurs chantiers en parallèle, ou qu'on fait le ménage des camarades entre deux sujets. Suppose HERDR_ENV=1."
 ---
 
 # L'anneau unique
@@ -30,7 +30,7 @@ ta recommandation en tête. Une question glissée dans un point d'étape reste s
 ## Le cycle, et où tu es dedans
 
 ```
-ouvrir → briefer → surveiller → récolter → purger ou fermer
+ouvrir → briefer → surveiller → récolter → fermer   (un sujet = un pane)
 ```
 
 Tu ne passes jamais à l'étape suivante sans la précédente. Un camarade briefé sans récolte est du
@@ -55,14 +55,19 @@ revient tout seul, sans lecture de pane ni abonnement.
 Un sous-agent reçoit le même brief qu'un pane (§ 3), règles invariantes comprises, et son
 rapport se vérifie de la même façon (§ 6).
 
-## 1. Avant tout brief : lis le contexte du camarade
+## 1. Nouveau sujet, nouveau pane
+
+**Un nouveau sujet part dans un pane neuf, jamais dans un pane qui porte déjà le contexte d'un
+autre sujet**, même purgé. Plusieurs panes ouverts en même temps, c'est le fonctionnement
+normal. Le pane du sujet fini se ferme (§ 7).
+
+Pour la suite du **même** sujet, lis d'abord le contexte du camarade :
 
 ```bash
 herdr agent read w1:p1Y | grep -oE 'ctx:[0-9.]+%' | tail -1
 ```
 
-**Au-delà de 50 %, purge avant de briefer**, sinon le brief se dilue dans un sujet qui n'est plus
-le sien. La ligne `ctx:` disparaît après un `/clear` : c'est ton accusé de réception.
+**Au-delà de 50 %, `/compact` avant de briefer**, sinon le brief se dilue.
 
 Une seule commande par camarade, chacune sur sa ligne. **Ne boucle pas** : dans une session isolée
 en worktree, le garde-fou refuse tout `for` / `while read` qui fait tourner un binaire avec une
@@ -121,9 +126,10 @@ stable, `acw-status/nains.json`, qui ne bouge pas quand la tâche change.
 
 Reprends un nom libre avant d'en inventer un. Deux camarades homonymes, et tu brieferas le mauvais.
 
-N'ouvre un pane que si aucun camarade n'est libre. **Une session neuve coûte souvent une stack**,
-donc regarde la charge machine avant (swap, nombre de conteneurs). Un défaut applicatif ordinaire se
-reproduit sur n'importe quelle stack déjà debout : confie-le à qui en a une.
+**Ce qui coûte, c'est une stack, pas un pane.** Pointe le pane neuf (`--cwd`) sur un worktree
+libre dont la stack et la base existent déjà ; regarde la charge machine (swap, nombre de
+conteneurs) avant d'en monter une de plus. Un défaut applicatif ordinaire se reproduit sur
+n'importe quelle stack déjà debout.
 
 ## 3. Briefer
 
@@ -183,7 +189,8 @@ d'ailleurs à son premier tour, sans `/clear` : ne relève celui d'une session n
 premier prompt. Et le pane relu juste après peut encore afficher le rendu d'avant : ce qui fait
 foi, c'est le nouvel identifiant dans `herdr agent list`, pas l'écran.
 
-`/compact` quand le contexte compte encore pour la suite, `/clear` quand le sujet est clos.
+`/compact` quand le contexte compte encore pour la suite du même sujet. Sujet clos : on ne
+`/clear` pas pour en lancer un autre, on ferme le pane et on en ouvre un neuf (§ 1).
 
 **Une commande slash ne s'envoie qu'à un camarade inactif.** Envoyée pendant qu'il travaille, elle
 part en file, et deux prompts envoyés coup sur coup **se collent en un seul message** : on a vu
@@ -279,12 +286,16 @@ nu pose `index.lock` et peut faire échouer le `git add` que le camarade lance a
 
 ## 7. Fermer, purger, ou laisser tranquille
 
+**Ouvrir et fermer les panes, c'est ton travail, pas une question pour l'utilisateur.** Applique
+la table, et dis le résultat en une ligne. `AskUserQuestion` reste réservé au produit et au
+périmètre.
+
 | Le camarade | Ce que tu fais |
 |---|---|
 | Sujet fini, travail commité ou poussé | **Ferme** : `herdr pane close <PANE_ID>` |
 | Sujet fini, travail non commité mais copié au scratchpad | **Ferme**, et dis où est la copie |
 | Sujet fini, travail non commité sans copie | **Ne ferme rien.** Fais la copie d'abord |
-| Même camarade, nouveau sujet | **`/clear`**, puis le nouveau brief |
+| Nouveau sujet à lancer | **Pane neuf**, jamais le pane d'un sujet précédent ; l'ancien se ferme selon les lignes ci-dessus |
 | En cours de tâche | **Laisse.** Une question en file si besoin |
 | Inactif mais porteur d'une décision en attente | **Récolte la décision**, puis ferme |
 | Lot fini, stack wtm encore debout | **`wtm stop <branche>`**, pas `remove` : le jeu de mesure reste relisible. `wtm list` en fin de journée, aucune ligne `up` sans camarade actif |
@@ -326,7 +337,7 @@ git hors du sien : le push, le rebase et le commit **se confient à celui qui ti
 ce camarade est déjà reparti sur un autre sujet, la commande attend, elle ne se contourne pas.
 
 **Ne confie pas deux sujets au même camarade.** Seul l'anneau unique en porte plusieurs. Un sujet, un
-pane, et `/clear` entre les deux.
+pane : nouveau sujet, nouveau pane.
 
 **Un camarade ne pousse pas et n'annonce pas.** Il rend la branche. La PR et l'annonce appartiennent
 à l'utilisateur. Écris-le dans chaque brief, ils l'oublient.
@@ -351,7 +362,7 @@ correctif part trop large.
 2. Pane ou sous-agent tranché (§ 0).
 3. `herdr agent list`, identifiés par UUID et pas par titre ; `ListAgents` refait.
 4. Contexte lu pour chaque camarade concerné, une commande par ligne.
-5. Au-delà de 50 % : `/clear` ou `/compact` avant de briefer, camarade inactif.
+5. Nouveau sujet : pane neuf. Suite du même sujet au-delà de 50 % : `/compact` avant de briefer, camarade inactif.
 6. Brief écrit dans un fichier, chaîne de travail dite, prompt d'une ligne qui le pointe.
 7. Pane relu : ordre parti ou en file, pas resté au `❯`, pas d'écran bloqué.
 8. Abonné à son inactivité sous son nom `ListAgents` du moment.
