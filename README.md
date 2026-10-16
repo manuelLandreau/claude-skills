@@ -88,6 +88,27 @@ Merged`. Le statut (WIP, CR, Merged) vient des PRs du repo courant, les reviews 
 commits sans ticket donnent quelques lignes en plus. Période par défaut : depuis le dernier jour
 ouvré. Écrite pour macOS (`date -v`, `pbcopy`).
 
+### [`tester-pr-studio`](skills/tester-pr-studio/SKILL.md)
+
+Teste une PR de tt-studio (le plugin theTribe Studio) de bout en bout avant le merge, sur un vrai
+Studio jetable et avec le plugin **de la branche**. Les tests unitaires ne voient pas ces PR : elles
+changent des prompts, des hooks et des scripts.
+
+- **Le banc** : un worktree au head distant de la PR, son plugin déployé en local, un Studio neuf
+  dans `/private/tmp/studio-test-<k>` et un projet Jira de test.
+- **La campagne** : des scénarios Étant donné / Quand / Alors. Ils viennent du ticket d'abord,
+  puis du test plan, du diff et des commits de correction. Chacun porte sa preuve et son contrôle
+  de polarité inverse.
+- **Le camarade** joue la campagne. Il tourne dans un pane Herdr, une session Claude Desktop ouverte
+  par `claude://code/new`, ou à défaut un sous-agent. Ce dernier est un banc dégradé : il garde le
+  cwd de la session, donc les scénarios qui le lisent ne sont pas testables.
+- **Le rendu** : verdicts par SHA, et une section « Tests fonctionnels » dans le corps de la PR.
+
+Le projet Jira de test se lit dans `~/.config/tester-pr-studio/config.json` (`jira_site`,
+`jira_projet`, `notes`). S'il manque, la skill demande le projet et écrit ce fichier. L'accord
+d'écriture se demande à part, à chaque campagne. Les campagnes restent sur le poste, dans
+`campagnes/`, que le repo ignore.
+
 ### [`gerer-une-pr`](skills/gerer-une-pr/SKILL.md)
 
 Pas pour mon poste : elle s'installe chez un PO qui ne fait pas de git. Il dit « crée une PR avec
@@ -130,8 +151,8 @@ Les skills et les rules sont alors disponibles dans toutes les sessions Claude C
 Pour mettre la sauvegarde à jour depuis le poste, les versions locales étant déjà génériques :
 
 ```bash
-for s in full-implem anneau-unique commits-and-prs ci-parity runtime-proof dailysum; do
-  rsync -a --delete --exclude='*.local.md' --exclude='.DS_Store' ~/.claude/skills/$s/ skills/$s/
+for s in full-implem anneau-unique commits-and-prs ci-parity runtime-proof dailysum tester-pr-studio; do
+  rsync -a --delete --exclude='*.local.md' --exclude='.DS_Store' --exclude='campagnes' ~/.claude/skills/$s/ skills/$s/
 done
 rsync -a --delete ~/.claude/rules/ rules/
 rsync -a --delete --exclude='.DS_Store' ~/dev/po-git/gerer-une-pr/ skills/gerer-une-pr/
