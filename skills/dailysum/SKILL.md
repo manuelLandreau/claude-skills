@@ -1,6 +1,6 @@
 ---
 name: dailysum
-description: Builds the user's daily standup summary, ready to paste in Slack. Use when the user asks for their daily, dailysum, standup recap, or "what did I do yesterday". One line per ticket (PROJ-123 - short description : status) plus short lines for untracked work, with emojis.
+description: 'Builds the user''s daily standup summary, ready to paste in Slack. Use when the user asks for their daily, dailysum, standup recap, or "what did I do yesterday". One line per ticket (PROJ-123 - short description : status) plus short lines for untracked work, with emojis.'
 ---
 
 # Dailysum
