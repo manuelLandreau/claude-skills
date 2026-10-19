@@ -94,20 +94,22 @@ Teste une PR de tt-studio (le plugin theTribe Studio) de bout en bout avant le m
 Studio jetable et avec le plugin **de la branche**. Les tests unitaires ne voient pas ces PR : elles
 changent des prompts, des hooks et des scripts.
 
-- **Le banc** : un worktree au head distant de la PR, son plugin déployé en local, un Studio neuf
-  dans `/private/tmp/studio-test-<k>` et un projet Jira de test.
-- **La campagne** : des scénarios Étant donné / Quand / Alors. Ils viennent du ticket d'abord,
-  puis du test plan, du diff et des commits de correction. Chacun porte sa preuve et son contrôle
-  de polarité inverse.
-- **Le camarade** joue la campagne. Il tourne dans un pane Herdr, une session Claude Desktop ouverte
-  par `claude://code/new`, ou à défaut un sous-agent. Ce dernier est un banc dégradé : il garde le
-  cwd de la session, donc les scénarios qui le lisent ne sont pas testables.
+- **Le banc de test** : un worktree au head distant de la PR, son plugin déployé en local, un
+  Studio neuf dans `/private/tmp/studio-test-<k>` et un projet Jira de test.
+- **La campagne** : des scénarios Étant donné / Quand / Alors. Ils viennent du ticket d'abord, un
+  critère d'acceptance au moins par scénario, puis du test plan, du diff et des commits de
+  correction. Chacun porte sa source, sa preuve et son contrôle de polarité inverse.
+- **La sous-session** joue la campagne, dans une session neuve dont le cwd est le Studio. Elle est
+  lancée selon le poste : un pane Herdr, une sous-session Claude Desktop
+  (`mcp__ccd_session__start_session`), ou `claude -p` en terminal. Un sous-agent reste le dernier
+  recours : il garde le cwd de la session, donc les scénarios qui le lisent ne sont pas testables.
 - **Le rendu** : verdicts par SHA, et une section « Tests fonctionnels » dans le corps de la PR.
 
-Le projet Jira de test se lit dans `~/.config/tester-pr-studio/config.json` (`jira_site`,
-`jira_projet`, `notes`). S'il manque, la skill demande le projet et écrit ce fichier. L'accord
-d'écriture se demande à part, à chaque campagne. Les campagnes restent sur le poste, dans
-`campagnes/`, que le repo ignore.
+Aucune autre skill n'est requise : Herdr sert s'il est là. Le projet Jira de test se lit dans
+`~/.config/tester-pr-studio/config.json` (`jira_site`, `jira_projet`, `notes`). S'il manque, la
+skill demande le projet et écrit ce fichier. L'accord d'écriture se demande à part, à chaque
+campagne. Les campagnes restent sur le poste, dans `campagnes/`, que le repo ignore ; celles des
+PR fermées sont purgées au montage suivant.
 
 ### [`gerer-une-pr`](skills/gerer-une-pr/SKILL.md)
 
