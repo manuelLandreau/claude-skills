@@ -61,6 +61,11 @@ rapport se vérifie de la même façon (§ 6).
 autre sujet**, même purgé. Plusieurs panes ouverts en même temps, c'est le fonctionnement
 normal. Le pane du sujet fini se ferme (§ 7).
 
+**Même sujet = même branche** : retours de review, CI rouge, preuve manquante sur la PR qu'il
+tient. Le ticket suivant de la même epic, un bug croisé en route, une PR voisine : nouveau sujet,
+même si le camarade « a déjà tout le contexte ». C'est précisément ce contexte qui pollue le
+suivant.
+
 Pour la suite du **même** sujet, lis d'abord le contexte du camarade :
 
 ```bash
@@ -109,22 +114,20 @@ rappelle d'écrire son statut quand un tour se termine sur un statut absent ou v
 camarade dont le brief va jusqu'au push ou à la PR (un `/full-implem` de bout en bout) se lance
 avec une troisième variable, `--env ACW_PEUT_POUSSER=1` ; sans elle, son push est refusé.
 
-**Le pane porte le nom du camarade, jamais celui du sujet** : `nains`, pas `abc-123`. Le sujet
-change à chaque `/clear`, le nom reste. `agent start` prend le nom en premier argument, donc pas
-de `rename` derrière. Pour rebaptiser un camarade déjà lancé : `herdr agent rename <PANE> <NOM>`.
+**Le pane porte le nom du camarade, jamais celui du sujet** : `nains`, pas `abc-123`.
+`agent start` prend le nom en premier argument, donc pas de `rename` derrière. Pour rebaptiser un camarade déjà lancé : `herdr agent rename <PANE> <NOM>`.
 
 **La convention de nommage : Le Seigneur des anneaux.** Toi, tu es l'anneau unique ; les camarades
 sont les peuples que tu gouvernes. Les trois premiers s'appellent `elfes`, `nains` et `humains`.
 Au-delà, prends un autre peuple (`hobbits`, `ents`, `istari`), puis des personnages (`aragorn`,
-`gandalf`, `gimli`, `legolas`, `frodon`…). Un nom par camarade, tenu pour toute sa vie.
+`gandalf`, `gimli`, `legolas`, `frodon`…). Un nom par camarade, tenu pour toute sa vie, qui dure
+un sujet.
 
-Ce n'est pas une coquetterie, ça fait trois choses. Les noms sont **courts, distincts à l'oreille
-et sans homonyme** avec un nom de branche ou de worktree, donc on ne confond pas un camarade avec
-son sujet. Ils **survivent au changement de sujet** : un pane nommé d'après sa tâche ment dès le
-premier `/clear`, un pane nommé `nains` reste vrai. Et ils donnent un nom de fichier de statut
-stable, `acw-status/nains.json`, qui ne bouge pas quand la tâche change.
+Ce n'est pas une coquetterie. Les noms sont **courts, distincts à l'oreille et sans homonyme**
+avec un nom de branche ou de worktree, donc on ne confond pas un camarade avec son sujet, et ils
+donnent un fichier de statut simple, `acw-status/nains.json`.
 
-Reprends un nom libre avant d'en inventer un. Deux camarades homonymes, et tu brieferas le mauvais.
+Un pane fermé libère son nom : reprends un nom libre avant d'en inventer un. Deux camarades homonymes, et tu brieferas le mauvais.
 
 **Ce qui coûte, c'est une stack, pas un pane.** Pointe le pane neuf (`--cwd`) sur un worktree
 libre dont la stack et la base existent déjà ; regarde la charge machine (swap, nombre de
@@ -150,7 +153,6 @@ porte les champs que certains projets exigent en plus de ceux-ci.
 Un brief qui tient la route porte, dans cet ordre :
 
 - **Son rôle** : son nom, qui est l'anneau unique, que l'utilisateur ne lui parle pas, où écrire son statut.
-- **« Nouveau sujet »** explicite quand c'en est un, et ce que devient le sujet précédent.
 - **Le constat mesuré**, avec les chiffres et les chemins de fichiers, pas une paraphrase.
 - **Ce qui est déjà établi et qu'il ne doit pas remesurer**, et quoi faire si ça tombe quand même.
 - **La limite de ce qui est établi**, nommément, pour qu'il ne l'élargisse pas.
@@ -171,26 +173,21 @@ Un brief qui tient la route porte, dans cet ordre :
 Quand la question produit n'est pas tranchée, **dis-lui de s'arrêter et de te rendre des options
 chiffrées**. Un camarade qui invente une règle métier livre un défaut de plus.
 
-## 4. Purger : `/clear` et `/compact` passent par `prompt`, pas par `send-keys`
+## 4. Les commandes slash passent par `prompt`, pas par `send-keys`
 
-`send-keys` ne prend que des **noms de touches** (`Enter`, `esc`). `send-keys <pane> "/clear"` rend
-`unsupported key`. La bonne commande :
+`send-keys` ne prend que des **noms de touches** (`Enter`, `esc`). `send-keys <pane> "/compact"`
+rend `unsupported key`. La bonne commande :
 
 ```bash
-herdr agent prompt w1:p1Y "/clear"
+herdr agent prompt w1:p1Y "/compact"
 ```
 
-Après un `/clear`, l'identifiant de session du camarade **change**. Ne t'accroche pas à l'ancien.
-Enchaîne ensuite sur le prompt qui pointe le nouveau brief.
+`/compact` seulement pour la suite du même sujet. **`/clear` ne sert jamais à changer de sujet** :
+sujet clos, on ferme le pane et on en ouvre un neuf (§ 1).
 
-Deux exceptions à cet accusé de réception. Une session qui n'a encore eu **aucun tour** n'a rien à
-purger : elle garde son identifiant, ne lui envoie pas de `/clear`. Cet identifiant change
-d'ailleurs à son premier tour, sans `/clear` : ne relève celui d'une session neuve qu'après son
-premier prompt. Et le pane relu juste après peut encore afficher le rendu d'avant : ce qui fait
-foi, c'est le nouvel identifiant dans `herdr agent list`, pas l'écran.
-
-`/compact` quand le contexte compte encore pour la suite du même sujet. Sujet clos : on ne
-`/clear` pas pour en lancer un autre, on ferme le pane et on en ouvre un neuf (§ 1).
+L'identifiant de session d'un camarade neuf change à son premier tour : ne le relève qu'après son
+premier prompt. Le pane relu juste après peut encore afficher le rendu d'avant : ce qui fait foi,
+c'est l'identifiant dans `herdr agent list`, pas l'écran.
 
 **Une commande slash ne s'envoie qu'à un camarade inactif.** Envoyée pendant qu'il travaille, elle
 part en file, et deux prompts envoyés coup sur coup **se collent en un seul message** : on a vu
@@ -226,11 +223,11 @@ SendMessage({to: "fix-export-button", notify_when_idle: true})
 Abonne-toi **au moment où tu briefes**, pas plus tard. Sans ça tu découvriras qu'un camarade a fini
 il y a une heure en posant une question sans rapport, et c'est du temps de machine perdu pour rien.
 
-**Le nom `ListAgents` d'un camarade change en cours de vie.** Après un `/clear`, une validation de
-plan ou un changement de sujet, la session se renomme d'elle-même (`mon-projet-96` devient par exemple
+**Le nom `ListAgents` d'un camarade change en cours de vie.** Après une validation de plan, par
+exemple, la session se renomme d'elle-même (`mon-projet-96` devient
 `fix-scoped-request-filter`). Un abonnement sur l'ancien nom échoue avec « No agent
 named ». **Refais `ListAgents` avant chaque abonnement**, et tiens une table nom Herdr → pane →
-nom `ListAgents` que tu mets à jour à chaque purge.
+nom `ListAgents` à jour.
 
 L'avis d'inactivité peut arriver **en double**, avec le même résumé. Un avis identique au
 précédent ne dit rien de neuf : ne te réabonne pas en boucle, relis le pane au tour suivant.
@@ -284,7 +281,11 @@ camarades actifs dès son premier avis d'inactivité. Un recouvrement, et l'un d
 Pour lire l'arbre d'un camarade, **`git -C <worktree> --no-optional-locks status`**. Un `git status`
 nu pose `index.lock` et peut faire échouer le `git add` que le camarade lance au même moment.
 
-## 7. Fermer, purger, ou laisser tranquille
+## 7. Fermer ou laisser tranquille
+
+**Le moment où ça dérape** : un camarade vient de rendre, il est inactif, et le sujet suivant
+attend. Le lui envoyer est la commande la plus courte, et c'est la mauvaise. Un avis
+d'inactivité sur un sujet fini déclenche cette table, jamais un nouveau brief dans ce pane.
 
 **Ouvrir et fermer les panes, c'est ton travail, pas une question pour l'utilisateur.** Applique
 la table, et dis le résultat en une ligne. `AskUserQuestion` reste réservé au produit et au
@@ -324,7 +325,7 @@ renvoie le prompt.
 queued messages » (ou « ctrl+enter to send now ») et le camarade est `working`. Celui-là, laisse-le.
 
 **Un camarade « done » n'est pas un camarade vide.** Il peut tenir un correctif non commité. Vérifie
-son statut et son worktree avant de le purger.
+son statut et son worktree avant de fermer son pane.
 
 **Vérifie dans quel arbre le camarade travaille, pas seulement son nom.** Le `cwd` d'un pane peut
 être le **checkout principal**, qui ne doit jamais être touché. Croise `herdr agent list` avec
@@ -334,7 +335,7 @@ son statut et son worktree avant de le purger.
 
 **Tu ne peux pas pousser à la place d'un camarade.** Une session isolée en worktree ne fait pas de
 git hors du sien : le push, le rebase et le commit **se confient à celui qui tient l'arbre**. Si
-ce camarade est déjà reparti sur un autre sujet, la commande attend, elle ne se contourne pas.
+son pane est déjà fermé, rouvre un pane sur le même worktree pour ça ; ça ne se contourne pas.
 
 **Ne confie pas deux sujets au même camarade.** Seul l'anneau unique en porte plusieurs. Un sujet, un
 pane : nouveau sujet, nouveau pane.
@@ -362,7 +363,7 @@ correctif part trop large.
 2. Pane ou sous-agent tranché (§ 0).
 3. `herdr agent list`, identifiés par UUID et pas par titre ; `ListAgents` refait.
 4. Contexte lu pour chaque camarade concerné, une commande par ligne.
-5. Nouveau sujet : pane neuf. Suite du même sujet au-delà de 50 % : `/compact` avant de briefer, camarade inactif.
+5. Nouveau sujet (autre branche) : pane neuf, même si un camarade vient de finir et attend. Suite du même sujet au-delà de 50 % : `/compact` avant de briefer, camarade inactif.
 6. Brief écrit dans un fichier, chaîne de travail dite, prompt d'une ligne qui le pointe.
 7. Pane relu : ordre parti ou en file, pas resté au `❯`, pas d'écran bloqué.
 8. Abonné à son inactivité sous son nom `ListAgents` du moment.
