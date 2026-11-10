@@ -49,8 +49,8 @@ onglet. Un anneau pour les gouverner tous : il dispatche et supervise, il ne cod
   commité, un statut périmé, un auto-rapport pris pour une preuve, un prompt resté tapé sans partir, un
   camarade bloqué sur une question.
 
-Les camarades portent des noms du Seigneur des anneaux : les peuples d'abord (`elfes`, `nains`,
-`humains`), puis d'autres peuples ou des personnages s'il en faut plus. Ces noms ne changent pas
+Les camarades portent des noms de personnages du Seigneur des anneaux, jamais de peuples : la
+Communauté d'abord (`frodon`, `sam`, `gandalf`…), puis d'autres personnages. Ces noms ne changent pas
 quand le sujet change, contrairement à un nom tiré de la tâche.
 
 La skill suppose `HERDR_ENV=1` et s'appuie sur la skill `herdr` pour la syntaxe du CLI.

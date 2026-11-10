@@ -87,11 +87,11 @@ tout le chantier d'un coup d'œil, sans changer d'onglet. Un pane neuf est un sh
 # relève ton pane : herdr pane current
 # premier camarade : coupe ton pane vers la droite
 herdr pane split <TON_PANE> --direction right --ratio 0.5 --cwd /chemin/du/worktree \
-  --env ANNEAU_CAMARADE=nains --env CLAUDE_CODE_PLUGIN_DIRS=$HOME/.claude/mods/camarade
+  --env ANNEAU_CAMARADE=gimli --env CLAUDE_CODE_PLUGIN_DIRS=$HOME/.claude/mods/camarade
 # camarades suivants : coupe vers le bas le plus haut des panes camarades
 herdr pane split <PANE_CAMARADE_LE_PLUS_HAUT> --direction down --cwd ... --env ... --env ...
 # relève le pane_id rendu, puis lance Claude dedans, avec le même nom :
-herdr agent start nains --kind claude --pane w1:pXX
+herdr agent start gimli --kind claude --pane w1:pXX
 # split déplace le focus sur le pane neuf : rends-le à l'utilisateur
 herdr pane focus --pane w1:pXX --direction left
 ```
@@ -103,7 +103,7 @@ ancien onglet) se range avec `herdr pane move <PANE> --tab <TON_ONGLET> --split 
 
 **Les deux `--env` ne sont pas optionnels.** Ils chargent le mod `~/.claude/mods/camarade` dans la
 session du camarade, et lui seul : une ligne d'état sous son prompt,
-`⚠ camarade: nains · CA22-20 · ⏸ plan prêt · maj 4 min`, relue toutes les 20 s dans
+`⚠ camarade: gimli · CA22-20 · ⏸ plan prêt · maj 4 min`, relue toutes les 20 s dans
 `anneau-status/<nom>.json`. Le `⚠` est le préfixe que Claude Code met à tout statut de mod, pas une
 alerte ; l'alerte, c'est `⚠ maj 45 min` sur un statut non fini, le camarade a oublié de l'écrire.
 Ce que l'utilisateur lit là vient du fichier de statut : un camarade qui ne le tient pas à jour
@@ -116,18 +116,18 @@ qui se termine encore sur « reçu » déclenche aussitôt le rappel. Un
 camarade dont le brief va jusqu'au push ou à la PR (un `/full-implem` de bout en bout) se lance
 avec une troisième variable, `--env ANNEAU_PEUT_POUSSER=1` ; sans elle, son push est refusé.
 
-**Le pane porte le nom du camarade, jamais celui du sujet** : `nains`, pas `abc-123`.
+**Le pane porte le nom du camarade, jamais celui du sujet** : `gimli`, pas `abc-123`.
 `agent start` prend le nom en premier argument, donc pas de `rename` derrière. Pour rebaptiser un camarade déjà lancé : `herdr agent rename <PANE> <NOM>`.
 
-**La convention de nommage : Le Seigneur des anneaux.** Toi, tu es l'anneau unique ; les camarades
-sont les peuples que tu gouvernes. Les trois premiers s'appellent `elfes`, `nains` et `humains`.
-Au-delà, prends un autre peuple (`hobbits`, `ents`, `istari`), puis des personnages (`aragorn`,
-`gandalf`, `gimli`, `legolas`, `frodon`…). Un nom par camarade, tenu pour toute sa vie, qui dure
-un sujet.
+**La convention de nommage : Le Seigneur des anneaux.** Toi, tu es l'anneau unique ; chaque
+camarade porte le nom d'un personnage, jamais celui d'un peuple. Pioche d'abord dans la
+Communauté (`frodon`, `sam`, `gandalf`, `aragorn`, `legolas`, `gimli`, `boromir`, `merry`,
+`pippin`), puis ailleurs (`faramir`, `eowyn`, `elrond`, `galadriel`…), sans accent pour que le
+fichier de statut reste simple. Un nom par camarade, tenu pour toute sa vie, qui dure un sujet.
 
 Ce n'est pas une coquetterie. Les noms sont **courts, distincts à l'oreille et sans homonyme**
 avec un nom de branche ou de worktree, donc on ne confond pas un camarade avec son sujet, et ils
-donnent un fichier de statut simple, `anneau-status/nains.json`.
+donnent un fichier de statut simple, `anneau-status/gimli.json`.
 
 Un pane fermé libère son nom : reprends un nom libre avant d'en inventer un. Deux camarades homonymes, et tu brieferas le mauvais.
 
