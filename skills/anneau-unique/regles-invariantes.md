@@ -25,6 +25,9 @@
   n'inventes pas une règle métier ; livrer une règle inventée fabrique un défaut de plus.
 - **Hors périmètre nommément** dans le corps de la PR : un correctif partiel qui ne nomme pas ses
   chemins frères devient invisible au statut du ticket.
+- **Aucune étiquette de travail interne dans un document partagé** (corps de PR, commit, ticket,
+  texte alternatif d'image) : pas de « D2 », « D9b », numéro de finding ou nom de camarade. Écris
+  le titre du point en clair ; un relecteur n'a pas la clé de nos sigles.
 - **Niveau de `/code-review`, toujours écrit explicitement** (il est collant) : `medium` sur le
   diff d'une tranche ou des commits de fix, **`high` pour la review finale**, une seule fois, sur
   la branche entière avant de rendre la main. Jamais `xhigh` ni `max`. Le nombre de findings suit
@@ -43,6 +46,19 @@
 - **Jamais de `rm -rf` dans ton worktree** : tes fichiers temporaires vont dans ton scratchpad,
   hors du repo. Une suppression récursive ouvre une demande d'approbation qui, sans réponse, se
   refuse seule au bout de quelques minutes, sans que tu saches pourquoi.
+
+## Comptes de test
+
+- **Un compte de test créé par un agent ne demande jamais l'utilisateur** : il n'en connaît pas
+  le mot de passe. Bloqué sur sa connexion, tu lui redéfinis toi-même un mot de passe (auth-service
+  ou Auth0 local) et tu te connectes en headless.
+- Sessions (`storageState`) et mots de passe vont dans
+  `~/.local/share/claude-test-accounts/<projet>/`, dossier en 700, fichiers en 600, un fichier par
+  compte (`<compte>.password`, `<compte>.json`). Jamais dans `/private/tmp`, vidé la nuit, ni dans
+  un repo. Lis-y d'abord ce qui existe avant d'en recréer.
+- Ne jamais afficher un mot de passe ni un jeton, même de test.
+- Seul un compte personnel de l'utilisateur (son vrai SSO, son compte réel) justifie de lui
+  demander une connexion.
 
 ## Compte rendu
 
