@@ -1,7 +1,7 @@
 import type { On } from 'claude-code'
 import { expect, mock, test } from 'claude-code/testing'
 
-import { nudge, pushes, PUSH_DENIED, RECEIVED } from './guard'
+import { isOrder, nudge, pushes, PUSH_DENIED, RECEIVED } from './guard'
 
 test('pushes catches git push and PR writes in any segment of a command', () => {
   for (const command of [
@@ -92,9 +92,16 @@ test('a stale status is reminded once per version, at the end of a main-loop tur
   expect(submitted[0]).toMatch(/depuis 60 min/)
 })
 
-test('a new order marks a finished status received, keeping what the camarade wrote', async ($, on) => {
-  const { written } = world(on, { ANNEAU_CAMARADE: 'elfes' }, { tache: 'OP-1', state: 'fini', updated_at: '2026-10-08T00:00:00Z' })
+test('only a prompt typed at the composer is an order', () => {
+  expect(isOrder({ kind: 'composer' })).toBe(true)
+  for (const kind of ['task-notification', 'peer', 'peer-send-message', 'unclassified', 'plugin']) {
+    expect(isOrder({ kind }), kind).toBe(false)
+  }
+})
+
+test('a prompt that is not an order leaves the status as the camarade wrote it', async ($, on) => {
+  const { written } = world(on, { ANNEAU_CAMARADE: 'elfes' }, { tache: 'OP-1', state: 'en cours', updated_at: '2026-10-08T11:59:00Z' })
   await $.session.start(START)
-  await $.prompt.submit({ text: 'Lis et execute /tmp/brief.txt' })
-  expect(written).toEqual([{ tache: 'OP-1', state: RECEIVED, updated_at: new Date(NOW).toISOString() }])
+  await $.prompt.submit({ text: 'Background command completed' })
+  expect(written).toEqual([])
 })

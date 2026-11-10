@@ -18,6 +18,10 @@ const STALE_AFTER_MIN = 30
 
 export const RECEIVED = 'reçu'
 
+// Only composer prompts are orders (herdr types there): task notifications, peer notices and the
+// mod's own reminders also submit prompts, and resetting on them overwrites a fresh status.
+export const isOrder = (origin: { kind: string } | undefined) => origin?.kind === 'composer'
+
 export const nudge = (name: string, status: CamaradeStatus | undefined, nowMs: number): string | undefined => {
   const file = `/private/tmp/claude-501/anneau-status/${name}.json`
   if (!status) return `Ton fichier de statut ${file} n'existe pas : écris-le ({tache, state, summary, fichiers, updated_at}).`

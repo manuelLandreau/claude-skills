@@ -1,5 +1,5 @@
 import type { EngineInterface, Register } from 'claude-code'
-import { nudge, pushes, PUSH_DENIED, RECEIVED } from './guard'
+import { isOrder, nudge, pushes, PUSH_DENIED, RECEIVED } from './guard'
 import { statusLine, type CamaradeStatus } from './statusLine'
 
 const STATUS_DIR = '/private/tmp/claude-501/anneau-status'
@@ -29,10 +29,9 @@ export const register: Register = on => {
     return next(e)
   })
 
-  // The mod's own reminders arrive as plugin prompts: resetting on them would erase what they ask about.
   on('prompt.submit', async ($, e, next) => {
     const name = await $.env.get('ANNEAU_CAMARADE')
-    if (name && !e.command && e.origin?.kind !== 'plugin') {
+    if (name && !e.command && isOrder(e.origin)) {
       const status = await readStatus($, name)
       const updated_at = new Date(await $.clock.now()).toISOString()
       await $.fs.write(`${STATUS_DIR}/${name}.json`, JSON.stringify({ ...status, state: RECEIVED, updated_at }))
