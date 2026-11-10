@@ -25,9 +25,18 @@ Ce qui a demandé plus de deux tours à trouver → le proposer à l'utilisateur
 
 Pas de skill de pilotage dans le repo ni de serveur MCP Playwright propre au projet : utilise le MCP utilisateur `playwright` (outils `mcp__playwright__*`). Il tourne headless et `--isolated`, profil en mémoire, donc plusieurs sessions en parallèle ne se bloquent pas sur un profil partagé. Absent de la session : script Node avec le Playwright du projet, les navigateurs téléchargés sont dans `~/Library/Caches/ms-playwright` (pas `~/.cache`). N'installe pas de navigateur.
 
-Stack éteinte, ou front qui ne sert pas l'arbre validé (worktree contre checkout principal) → **bloqué**, le dire. Ne jamais se rabattre sur un autre environnement.
+## 2. Préflight, avant le premier parcours
 
-## 2. Séquence de preuve
+Une passe, avant toute capture : bloquer en une minute plutôt qu'au troisième scénario.
+
+- **Stack debout** : conteneurs du projet up, base qui répond (`pg_isready` ou équivalent).
+- **Code servi = arbre validé** : API et front démarrés depuis ce worktree, après son dernier commit ou en watch. Pas un process, une image ou un `dist/` d'une autre branche ou du checkout principal.
+- **Schéma à jour** : un client généré (Prisma, proxies Doctrine, client OpenAPI…) plus vieux que son schéma se régénère sans demander, c'est un artefact local. Les migrations de la branche s'appliquent sur la base du worktree (`wtm`) ; sur une base partagée avec d'autres checkouts, elles se demandent.
+- **Comptes** : chaque persona a un login utilisable sans l'utilisateur. Un SSO (Keycloak…) ou un staging qui exige un identifiant que tu n'as pas se demande **maintenant**, en une question, pas après le montage.
+
+Un point rouge que tu ne peux pas lever → **bloqué**, le dire avec la commande qui le lève. Ne jamais se rabattre sur un autre environnement.
+
+## 3. Séquence de preuve
 
 1. Poser un état de départ connu en base, et le vérifier.
 2. `page.reload()`, capture « avant ».
@@ -38,7 +47,7 @@ Stack éteinte, ou front qui ne sert pas l'arbre validé (worktree contre checko
 
 Une capture n'est pas une preuve, le parcours l'est. Souvent plus fort qu'une capture : une assertion sur les appels réseau réellement partis (`browser_network_requests`, ou `page.on("response", …)` en script), qui prouve par exemple qu'une section verrouillée ne déclenche aucune requête plutôt qu'un 403. Un critère = un parcours ; les parcours indépendants tournent tous, un échec n'annule pas les autres. Ce qui n'a pas de surface UI (API, e-mail, tâche asynchrone, ligne en base) se prouve par `curl`, requête SQL ou log, et se rapporte comme preuve hors navigateur.
 
-## 3. Pièges vérifiés
+## 4. Pièges vérifiés
 
 **Cache client sur `page.goto`.** TanStack Query, SWR, Apollo servent les données en cache après une écriture directe en base : un `goto` peut réafficher l'ancien état. `page.reload()` récupère l'état serveur.
 
