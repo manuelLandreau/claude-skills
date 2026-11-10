@@ -46,7 +46,7 @@
 
 ## Compte rendu
 
-- Tiens `/private/tmp/claude-501/acw-status/<ton-nom>.json` avec
+- Tiens `/private/tmp/claude-501/anneau-status/<ton-nom>.json` avec
   `{tache, state, summary, fichiers, updated_at}`. L'anneau unique le lit ; c'est plus fiable que
   la sortie de ton terminal.
 - **Avant d'écrire du code**, remplis `fichiers` avec ce que tu vas créer ou modifier, et tiens-le

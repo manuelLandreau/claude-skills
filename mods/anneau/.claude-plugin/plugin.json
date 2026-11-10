@@ -1,0 +1,6 @@
+{
+  "name": "anneau",
+  "version": "0.1.0",
+  "description": "État des camarades dans la session de l'anneau unique : bandeau, panneau /camarades, outil camarades_etat",
+  "types": "./types/index.d.ts"
+}

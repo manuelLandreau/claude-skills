@@ -1,0 +1,1 @@
+{ "name": "camarade", "version": "0.1.0", "description": "Ligne d'état d'un camarade de l'anneau unique, lue dans anneau-status/<nom>.json" }

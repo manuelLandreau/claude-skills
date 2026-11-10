@@ -87,7 +87,7 @@ tout le chantier d'un coup d'œil, sans changer d'onglet. Un pane neuf est un sh
 # relève ton pane : herdr pane current
 # premier camarade : coupe ton pane vers la droite
 herdr pane split <TON_PANE> --direction right --ratio 0.5 --cwd /chemin/du/worktree \
-  --env ACW_CAMARADE=nains --env CLAUDE_CODE_PLUGIN_DIRS=$HOME/.claude/mods/camarade
+  --env ANNEAU_CAMARADE=nains --env CLAUDE_CODE_PLUGIN_DIRS=$HOME/.claude/mods/camarade
 # camarades suivants : coupe vers le bas le plus haut des panes camarades
 herdr pane split <PANE_CAMARADE_LE_PLUS_HAUT> --direction down --cwd ... --env ... --env ...
 # relève le pane_id rendu, puis lance Claude dedans, avec le même nom :
@@ -104,15 +104,17 @@ ancien onglet) se range avec `herdr pane move <PANE> --tab <TON_ONGLET> --split 
 **Les deux `--env` ne sont pas optionnels.** Ils chargent le mod `~/.claude/mods/camarade` dans la
 session du camarade, et lui seul : une ligne d'état sous son prompt,
 `⚠ camarade: nains · CA22-20 · ⏸ plan prêt · maj 4 min`, relue toutes les 20 s dans
-`acw-status/<nom>.json`. Le `⚠` est le préfixe que Claude Code met à tout statut de mod, pas une
+`anneau-status/<nom>.json`. Le `⚠` est le préfixe que Claude Code met à tout statut de mod, pas une
 alerte ; l'alerte, c'est `⚠ maj 45 min` sur un statut non fini, le camarade a oublié de l'écrire.
 Ce que l'utilisateur lit là vient du fichier de statut : un camarade qui ne le tient pas à jour
 ment aussi dans le pane (§ 6).
 
 Le mod refuse aussi `git push` et `gh pr create|ready|merge` dans la session du camarade, et lui
-rappelle d'écrire son statut quand un tour se termine sur un statut absent ou vieux de 30 min. Un
+rappelle d'écrire son statut quand un tour se termine sur un statut absent ou vieux de 30 min. Chaque
+ordre reçu passe lui-même le statut à `📥 reçu` (l'ancien « fini » ne reste pas affiché), et un tour
+qui se termine encore sur « reçu » déclenche aussitôt le rappel. Un
 camarade dont le brief va jusqu'au push ou à la PR (un `/full-implem` de bout en bout) se lance
-avec une troisième variable, `--env ACW_PEUT_POUSSER=1` ; sans elle, son push est refusé.
+avec une troisième variable, `--env ANNEAU_PEUT_POUSSER=1` ; sans elle, son push est refusé.
 
 **Le pane porte le nom du camarade, jamais celui du sujet** : `nains`, pas `abc-123`.
 `agent start` prend le nom en premier argument, donc pas de `rename` derrière. Pour rebaptiser un camarade déjà lancé : `herdr agent rename <PANE> <NOM>`.
@@ -125,7 +127,7 @@ un sujet.
 
 Ce n'est pas une coquetterie. Les noms sont **courts, distincts à l'oreille et sans homonyme**
 avec un nom de branche ou de worktree, donc on ne confond pas un camarade avec son sujet, et ils
-donnent un fichier de statut simple, `acw-status/nains.json`.
+donnent un fichier de statut simple, `anneau-status/nains.json`.
 
 Un pane fermé libère son nom : reprends un nom libre avant d'en inventer un. Deux camarades homonymes, et tu brieferas le mauvais.
 
@@ -264,7 +266,7 @@ mets-le en tête du prompt : `[QUESTION EN FILE, ne coupe pas ton sujet en cours
 
 ## 6. Récolter
 
-Chaque camarade tient `/private/tmp/claude-501/acw-status/<nom>.json` avec
+Chaque camarade tient `/private/tmp/claude-501/anneau-status/<nom>.json` avec
 `{tache, state, summary, fichiers, updated_at}`. **Lis-le avant de conclure quoi que ce soit sur lui** : le
 titre du pane et l'état `agent_status` peuvent être périmés.
 

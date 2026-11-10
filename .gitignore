@@ -1,3 +1,4 @@
 *.local.md
 .DS_Store
 skills/tester-pr-studio/campagnes/
+mods/*/.claude-plugin/types/
