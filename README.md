@@ -20,7 +20,8 @@ suit le niveau d'effort demandé plutôt que le code, et un scope qui déborde d
   plan lui attribue, puis passe une `/code-review medium` sur son seul diff.
 - **Deux relectures** : `/simplify` applique les corrections de qualité, puis une
   `/code-review high` sur la branche rapporte les problèmes de correctness. Les passes sur le
-  diff des fix redescendent en `medium` pour que la boucle converge.
+  diff des fix redescendent en `medium` pour que la boucle converge, et elle s'arrête au plus
+  tard à la troisième passe.
 - **Livraison** : garde-fous CI (`ci-parity`), preuve runtime (`runtime-proof`), fixup fondus par
   autosquash, commits atomiques, PR en draft.
 

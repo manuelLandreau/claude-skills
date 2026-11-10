@@ -211,8 +211,10 @@ Ce qui est borné, c'est la **boucle**, pas la sortie :
 - chaque correction part en `git commit --fixup=<sha de la tranche>` ;
 - après correction, une seconde passe `/code-review medium` sur le **diff des commits de fix**
   uniquement, jamais sur la branche entière, sinon les mêmes arbitrages se repayent ;
-- **la boucle s'arrête quand une passe ne remonte rien de nouveau.** C'est la seule condition de
-  sortie ;
+- **la boucle s'arrête quand une passe ne remonte rien de nouveau, ou au bout de trois passes**,
+  la `high` comprise. À la troisième sans convergence, ne relance pas : rends les findings
+  restants avec leur sévérité et, pour chacun, l'option corriger ou reporter, puis attends
+  l'arbitrage ;
 - si une passe remonte encore du neuf hors du périmètre des fix, ne relance pas : arrête, dis-le,
   et rends la liste. Ça veut dire que le plan était faux, pas que le code demande un tour de plus.
 
