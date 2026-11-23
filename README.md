@@ -129,29 +129,6 @@ skill demande le projet et écrit ce fichier. L'accord d'écriture se demande à
 campagne. Les campagnes restent sur le poste, dans `campagnes/`, que le repo ignore ; celles des
 PR fermées sont purgées au montage suivant.
 
-### [`gerer-une-pr`](skills/gerer-une-pr/SKILL.md)
-
-Pas pour mon poste : elle s'installe chez un PO qui ne fait pas de git. Il dit « crée une PR avec
-tout ça », « mets ma PR à jour », « je peux merger ? », Claude fait le reste en silence et lui
-rend une ligne et un lien.
-
-- **Que des merges** : jamais de rebase ni de force-push, chaque push ajoute.
-- **Aucune modif perdue** : déplacées par `git switch --merge`, mises de côté seulement si le PO
-  le choisit, secrets laissés hors du commit.
-- **Le PO merge lui-même**, quand un dev a approuvé, avec la méthode de merge nommée.
-- **Quatre questions possibles**, pas une de plus (conflit dans un texte lisible, PR cible
-  ambiguë, changement de sujet avec des modifs en cours, choix métier dans une review).
-
-Installation sur le poste du PO, une fois, par un dev :
-
-```bash
-cp -R claude-skills/skills/gerer-une-pr ~/.claude/skills/
-gh auth login && gh auth setup-git
-```
-
-Le PO ouvre Claude sur son propre clone du repo client. La skill refuse le dossier Studio et le
-cache `~/.thetribe-studio/projects/…`.
-
 ## Les rules
 
 [`rules/`](rules) contient des règles courtes chargées par toutes les sessions, là où une skill
@@ -162,7 +139,7 @@ worktrees, pas d'écriture Jira sans accord direct, et la façon de rapporter un
 
 ```bash
 git clone https://github.com/manuelLandreau/claude-skills
-rsync -a --exclude=gerer-une-pr claude-skills/skills/ ~/.claude/skills/
+rsync -a claude-skills/skills/ ~/.claude/skills/
 mkdir -p ~/.claude/rules && cp claude-skills/rules/* ~/.claude/rules/
 ```
 
@@ -175,7 +152,6 @@ for s in full-implem anneau-unique anneau-desktop commits-and-prs ci-parity runt
   rsync -a --delete --exclude='*.local.md' --exclude='.DS_Store' --exclude='campagnes' ~/.claude/skills/$s/ skills/$s/
 done
 rsync -a --delete ~/.claude/rules/ rules/
-rsync -a --delete --exclude='.DS_Store' ~/dev/po-git/gerer-une-pr/ skills/gerer-une-pr/
 ```
 
 ## Hypothèses d'environnement
