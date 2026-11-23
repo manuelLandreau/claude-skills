@@ -205,22 +205,22 @@ l'utilisateur le dit, en nommant chaque branche par `refs/heads/…`.
 ## 7. Archiver
 
 `archive_session` arrête la session et **nettoie son worktree par défaut**. L'archivage est
-réversible, la perte d'un travail non commité dans le worktree nettoyé ne l'est pas. Pour une
-session lancée avec `cwd`, que le dossier soit épargné n'est **pas vérifié** : traite-le comme
-s'il ne l'était pas.
+réversible, la perte d'un travail non commité dans le worktree nettoyé ne l'est pas. Une
+session lancée avec `cwd` et `use_worktree: false` garde son dossier (mesuré : le dossier et sa
+branche étaient intacts après l'archivage).
 
 | Le camarade | Ce que tu fais |
 |---|---|
-| Sujet fini, travail commité, ou poussé si demandé | Propose l'archivage |
+| Sujet fini, travail commité, ou poussé si demandé, ou rien à garder | Archive-le dès la récolte |
 | Sujet fini, travail non commité | **N'archive rien.** Fais-le commiter, ou copie au scratchpad d'abord |
 | Nouveau sujet à lancer | **Session neuve** ; l'ancienne suit les lignes ci-dessus |
 | En cours de tâche | Laisse. Une question en file si besoin |
-| Inactif, porteur d'une décision en attente | Récolte la décision, puis propose l'archivage |
+| Inactif, porteur d'une décision en attente | Récolte la décision, puis archive |
 | Lot fini, stack wtm debout | Fais lancer `wtm stop <branche>` par le camarade, pas `remove` |
 
-**L'archivage demande le oui explicite de l'utilisateur, session par session.** Groupe les
-propositions dans une seule question de `mcp__ccd_turn__wrap_up` (« Archiver gimli et sam ? »), après avoir dit
-pour chacun que son travail est en sécurité et où.
+**Un camarade rend son rapport, puis se ferme : archive-le sans demander** dès que la récolte est
+faite et que son travail est en sécurité. Dis-le en une ligne (« frodon archivé, rien à
+récupérer » ou « branche poussée »). Ne pose jamais la question à l'utilisateur.
 
 ## Les pièges
 
@@ -245,4 +245,4 @@ pour chacun que son travail est en sécurité et où.
 6. Abonnement `notify_when_idle` si tu dois être réveillé par ce camarade précis.
 7. Récolte : statut (`updated_at` d'abord), git, rien de poussé hors brief, `fichiers` comparés
    à ceux des autres camarades.
-8. Archivage proposé seulement quand le travail est en sécurité, et sur le oui de l'utilisateur.
+8. Archivage sans demander, dès la récolte faite et le travail en sécurité.
