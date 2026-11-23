@@ -55,6 +55,23 @@ quand le sujet change, contrairement à un nom tiré de la tâche.
 
 La skill suppose `HERDR_ENV=1` et s'appuie sur la skill `herdr` pour la syntaxe du CLI.
 
+### [`anneau-desktop`](skills/anneau-desktop/SKILL.md)
+
+Le même rôle qu'`anneau-unique`, dans Claude Code Desktop au lieu de Herdr : les camarades sont des
+sessions liées lancées par `start_session`, rangées sous l'anneau dans la barre latérale.
+
+- **Le brief part dans l'appel** qui lance la session : plus de fichier ni de prompt d'une ligne.
+  Les règles invariantes et `projets.local.md` restent ceux d'`anneau-unique`, cités par leur
+  chemin.
+- **Un camarade ne bloque jamais sur un écran** (question, mode plan) : l'anneau ne peut pas
+  cliquer à sa place. Il finit son tour sur sa question, l'anneau lui répond par message.
+- **L'app réveille l'anneau** quand ses camarades ont fini leur tour. `notify_when_idle` reste
+  possible pour un camarade précis.
+- **Archiver nettoie le worktree** : on vérifie dans git que le travail est commité, puis on
+  archive sur le oui de l'utilisateur.
+- **Ce qui manque par rapport à Herdr** : le mod camarade (ligne d'état, refus du `git push`) ne se
+  charge pas, et `/compact` se tape à la main dans la session du camarade.
+
 ### [`commits-and-prs`](skills/commits-and-prs/SKILL.md)
 
 Le défaut pour committer, rebaser et ouvrir une PR quand le repo ne fixe pas ses propres règles
@@ -154,7 +171,7 @@ Les skills et les rules sont alors disponibles dans toutes les sessions Claude C
 Pour mettre la sauvegarde à jour depuis le poste, les versions locales étant déjà génériques :
 
 ```bash
-for s in full-implem anneau-unique commits-and-prs ci-parity runtime-proof dailysum tester-pr-studio; do
+for s in full-implem anneau-unique anneau-desktop commits-and-prs ci-parity runtime-proof dailysum tester-pr-studio; do
   rsync -a --delete --exclude='*.local.md' --exclude='.DS_Store' --exclude='campagnes' ~/.claude/skills/$s/ skills/$s/
 done
 rsync -a --delete ~/.claude/rules/ rules/
