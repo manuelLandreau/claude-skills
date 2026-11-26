@@ -22,6 +22,8 @@ suit le niveau d'effort demandé plutôt que le code, et un scope qui déborde d
   `/code-review high` sur la branche rapporte les problèmes de correctness. Les passes sur le
   diff des fix redescendent en `medium` pour que la boucle converge, et elle s'arrête au plus
   tard à la troisième passe.
+- **Findings rejugés** : à chaque passe, un agent tiers rejuge les findings avant tout correctif
+  (rule [`verification-tierce`](rules/verification-tierce.md)).
 - **Livraison** : garde-fous CI (`ci-parity`), preuve runtime (`runtime-proof`), fixup fondus par
   autosquash, commits atomiques, PR en draft.
 
@@ -80,9 +82,9 @@ Le défaut pour committer, rebaser et ouvrir une PR quand le repo ne fixe pas se
 - **Commits atomiques** gardés propres par rebase local, quelle que soit la stratégie de merge
   du remote : amend ou fixup + autosquash non interactif, jamais de merge de la base.
 - **Messages** en anglais, conventional commits, corps court qui dit le pourquoi.
-- **Corps de PR** en deux sections : « En bref », laissée vide pour qu'un humain la rédige, et
-  « Détails techniques », que l'agent peut remplir. Une édition repart du corps publié pour ne
-  pas écraser ce que l'auteur y a mis.
+- **Corps de PR** en trois sections : « Ce que change cette PR pour l'utilisateur », sans jargon,
+  « Comment tester », le parcours le plus court, et « TL;DR », technique, que l'agent tient à
+  jour. Une édition reprend mot pour mot les deux premières telles que publiées.
 - **Captures** rangées dans un dossier par PR, relues avant d'être annoncées.
 - **Retours de review** : un commit correctif par-dessus, sans force-push.
 
@@ -98,6 +100,13 @@ Prouve un changement en pilotant la vraie app locale, headless : ce qu'il faut s
 avant (URL, comptes, flags, reset), la séquence avant / action / rechargement / recoupement en
 base, et les pièges (cache client sur `goto`, snapshot qui lit le DOM et pas la mise en page,
 droits figés dans le token).
+
+### [`diaporama`](skills/diaporama/SKILL.md)
+
+Une vidéo de démo lisible à partir d'un script Playwright : une capture par étape, un anneau à
+l'endroit du clic, une légende sous l'image, des fondus courts et un carton titre par partie. Pas
+de curseur animé ni de problème de framerate. `slides.mjs` fournit `shot`, `click`, `title` et
+`render`. Il faut `playwright-core` et `ffmpeg` avec `libx264`.
 
 ### [`dailysum`](skills/dailysum/SKILL.md)
 
@@ -133,7 +142,15 @@ PR fermées sont purgées au montage suivant.
 
 [`rules/`](rules) contient des règles courtes chargées par toutes les sessions, là où une skill
 ne serait lue qu'à la demande : n'arrêter que ses propres process, pas de `git stash` nu entre
-worktrees, pas d'écriture Jira sans accord direct, et la façon de rapporter une preuve.
+worktrees, pas d'écriture Jira sans accord direct, la façon de rapporter une preuve, et la
+vérification par un agent tiers de toute review et de tout code produit.
+
+## Les mods
+
+[`mods/`](mods) contient deux mods Claude Code pour l'anneau unique : `camarade` affiche la ligne
+d'état d'un camarade sous son prompt et refuse son `git push` ; `anneau` affiche l'état des
+camarades dans la session de l'anneau (bandeau, panneau `/camarades`, outil `camarades_etat`).
+Ils s'installent dans `~/.claude/mods/`.
 
 ## Installation
 
@@ -141,14 +158,15 @@ worktrees, pas d'écriture Jira sans accord direct, et la façon de rapporter un
 git clone https://github.com/manuelLandreau/claude-skills
 rsync -a claude-skills/skills/ ~/.claude/skills/
 mkdir -p ~/.claude/rules && cp claude-skills/rules/* ~/.claude/rules/
+mkdir -p ~/.claude/mods && rsync -a claude-skills/mods/ ~/.claude/mods/
 ```
 
-Les skills et les rules sont alors disponibles dans toutes les sessions Claude Code.
+Les skills, les rules et les mods sont alors disponibles dans toutes les sessions Claude Code.
 
 Pour mettre la sauvegarde à jour depuis le poste, les versions locales étant déjà génériques :
 
 ```bash
-for s in full-implem anneau-unique anneau-desktop commits-and-prs ci-parity runtime-proof dailysum tester-pr-studio; do
+for s in full-implem anneau-unique anneau-desktop commits-and-prs ci-parity runtime-proof diaporama dailysum tester-pr-studio; do
   rsync -a --delete --exclude='*.local.md' --exclude='.DS_Store' --exclude='campagnes' ~/.claude/skills/$s/ skills/$s/
 done
 rsync -a --delete ~/.claude/rules/ rules/
