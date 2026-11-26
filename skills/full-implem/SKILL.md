@@ -141,7 +141,9 @@ Pour chaque tranche :
    tranche (import, type généré, migration) et tu le gardes en le disant en une ligne, soit tu
    le **révoques** (`git checkout --`) et la ligne va sous `Reporté`. Aucun « tant qu'on y est »,
    aucun renommage d'opportunité, aucune abstraction absente du plan.
-3. `/code-review medium` **sur le diff de cette tranche uniquement**, jamais sur la branche.
+3. `/code-review medium` **sur le diff de cette tranche uniquement**, jamais sur la branche,
+   puis chaque finding rejugé par un agent tiers (rule `verification-tierce`) : `medium` ne
+   vérifie pas lui-même.
 4. Corriger ce qui est `CONFIRMED` **et** dans le plan. Le reste va sous `Reporté`. Zéro finding
    sur une tranche est un résultat normal : tu commites et tu passes à la suivante sans chercher
    à en produire.
@@ -196,8 +198,8 @@ parcours écrit dans le plan, pas un autre. Captures dans le dossier de la PR qu
 Relis d'abord le plan gelé, puis lance **une** `/code-review high` sur la branche nettoyée, en
 lui donnant les sections « Dans le scope » et « Hors scope » dans le prompt.
 
-Si ses findings reviennent sans verdict `CONFIRMED` / `PLAUSIBLE`, `high` n'a pas vérifié et le
-tri qui suit ne tient plus : relance en `medium` et dis-le dans le rapport.
+Ses findings sont ensuite rejugés par un agent tiers (rule `verification-tierce`), qui lit aussi
+le plan gelé. Le tri qui suit porte sur ses verdicts, pas sur ceux de la review.
 
 **Il n'y a pas de quota de findings, ni plancher ni plafond.** Une PR propre qui ressort zéro
 finding est le résultat attendu du reste de la skill, pas un échec de la review ; ne cherche
@@ -210,7 +212,8 @@ Ce qui est borné, c'est la **boucle**, pas la sortie :
   plan va sous `Reporté`, il ne se corrige pas sur cette branche ;
 - chaque correction part en `git commit --fixup=<sha de la tranche>` ;
 - après correction, une seconde passe `/code-review medium` sur le **diff des commits de fix**
-  uniquement, jamais sur la branche entière, sinon les mêmes arbitrages se repayent ;
+  uniquement, jamais sur la branche entière, sinon les mêmes arbitrages se repayent, et ses
+  findings rejugés par un agent tiers comme ceux de la première passe ;
 - **la boucle s'arrête quand une passe ne remonte rien de nouveau, ou au bout de trois passes**,
   la `high` comprise. À la troisième sans convergence, ne relance pas : rends les findings
   restants avec leur sévérité et, pour chacun, l'option corriger ou reporter, puis attends
@@ -253,7 +256,8 @@ et tu affiches la commande prête.
 
 Avant d'avoir le droit de rendre la main, relis le plan gelé et vérifie ligne à ligne : chaque
 tranche livrée ou explicitement reportée, garde-fous verts, preuve runtime produite pour le parcours
-que le plan nomme, passe qualité passée, review finale convergée, fixup fondus, PR ouverte. Une case non
+que le plan nomme, passe qualité passée, review finale convergée, findings rejugés par un agent
+tiers, fixup fondus, PR ouverte. Une case non
 cochée n'est pas un point à signaler dans le rapport, c'est du travail à finir : reprends la
 phase concernée.
 
